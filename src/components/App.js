@@ -1,10 +1,11 @@
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+import {createAppContainer, createStackNavigator} from 'react-navigation';
 
 import WelcomeScreen from './WelcomeScreen'
 import SignInScreen from './SignInScreen'
-import HomeView from './HomeView'
 
-import { fromBottom, fromRight } from 'react-navigation-transitions'
+import {fromBottom} from 'react-navigation-transitions'
+import CompleteDetails from "./CompleteDetails";
+import TabNavigation from "./TabNavigation";
 
 const handleCustomTransition = ({ scenes }) => {
   const prevScene = scenes[scenes.length - 2];
@@ -15,16 +16,28 @@ const handleCustomTransition = ({ scenes }) => {
       && prevScene.route.routeName === 'Welcome'
       && nextScene.route.routeName === 'SignIn') {
     return fromBottom();
-  }
-  return fromRight();
+  } else if (prevScene
+      && prevScene.route.routeName === 'CompleteDetails'
+      && nextScene.route.routeName === 'Home') {
+      return fromBottom();
+  } else if (prevScene
+      && prevScene.route.routeName === 'SignIn'
+      && prevScene.route.routeName === 'BottomTabNavigator')
+      return fromBottom();
 };
 
 const MainNavigator = createStackNavigator({
   Welcome: {screen: WelcomeScreen},
   SignIn: {screen: SignInScreen},
-  Home: {screen: HomeView}
+    CompleteDetails: {screen: CompleteDetails},
+    BottomTabNavigator: {
+        screen: TabNavigation,
+        navigationOptions: {
+            header: null
+        }
+    }
 }, {
-  transitionConfig: (nav) => handleCustomTransition(nav)
+    transitionConfig: (nav) => handleCustomTransition(nav),
 });
 
 const App = createAppContainer(MainNavigator);

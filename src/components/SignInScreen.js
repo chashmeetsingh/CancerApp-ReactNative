@@ -1,19 +1,16 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView } from 'react-native';
-import { Button, Input, Text, Overlay } from 'react-native-elements';
+import React, {Component} from 'react';
+import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
+import {Button, Input, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import * as firebase from 'firebase';
 import * as Facebook from 'expo-facebook';
+import CompleteDetails from "./CompleteDetails";
 
 export default class SignInScreen extends Component {
 
     static navigationOptions = {
         header: null
-    };
-
-    state = {
-        modalVisible: false
     };
 
     // Initialize Firebase
@@ -36,16 +33,16 @@ export default class SignInScreen extends Component {
         firebase.auth().onAuthStateChanged((user) => {
             if (user != null) {
                 console.log("We are authenticated now!");
+                this.props.navigation.navigate('BottomTabNavigator');
             }
 
             // Do other things
         });
     }
 
-    completeDetails = () => {
-        this.setState({
-            modalVisible: true
-        })
+    completeDetails = (profileData) => {
+        const {navigate} = this.props.navigation;
+        navigate('CompleteDetails', {profileData: profileData})
     };
 
     async loginWithFacebook() {
@@ -58,7 +55,7 @@ export default class SignInScreen extends Component {
             // Build Firebase credential with the Facebook access token.
             const credential = firebase.auth.FacebookAuthProvider.credential(token);
 
-            // Sign in with credential from the Facebook user.
+            // Sign in with credential from the Facebook userList.
             firebase
                 .auth()
                 .signInWithCredential(credential)
@@ -67,7 +64,7 @@ export default class SignInScreen extends Component {
                         if (snapshot.val()) {
                             for (var key in snapshot.val()) {
                                 if (snapshot.val()[key] === "") {
-                                    this.completeDetails();
+                                    this.completeDetails(snapshot.val());
                                     return;
                                 }
                             }
@@ -81,11 +78,12 @@ export default class SignInScreen extends Component {
                                 website_link: "",
                                 keywords: "",
                                 bio: "",
-                                uid: result.user.uid
+                                uid: result.user.uid,
+                                name: snapshot.val().username
                             };
                             firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
-                                this.completeDetails();
-                                return;
+                                this.completeDetails(defaultUserProfileValues);
+
                             });
                         }
                     })
@@ -161,9 +159,6 @@ export default class SignInScreen extends Component {
                         />
                     </View>
                 </KeyboardAvoidingView>
-                <Overlay isVisible={this.state.modalVisible}>
-                    <Text>Hello from Overlay!</Text>
-                </Overlay>
             </View>
         )
     }
