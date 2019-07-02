@@ -5,21 +5,69 @@ import MessagingScreen from './MessageScreen'
 
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MessageDetail from "./MessageDetail";
+import ProfileScreen from "./ProfileScreen";
+import CollabBoardScreen from "./CollabBoardScreen";
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
         screen: MatchesScreen,
         navigationOptions: {
-            headerTitle: 'Matches'
+            headerTitle: 'Matches',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
         }
     }
 });
 
 const MessagingStack = createStackNavigator({
-    MessagingView: MessagingScreen,
+    MessagingView: {
+        screen: MessagingScreen,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
     MessageDetailView: {
-        screen: MessageDetail
+        screen: MessageDetail,
+        navigationOptions: {
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    }
+});
+
+const ProfileStack = createStackNavigator({
+    ProfileView: {
+        screen: ProfileScreen,
+        navigationOptions: {
+            title: 'Profile',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    }
+});
+
+const CollabStack = createStackNavigator({
+    CollabView: {
+        screen: CollabBoardScreen,
+        navigationOptions: {
+            title: 'Collab Board',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
     }
 });
 
@@ -47,6 +95,18 @@ const BottomTabNavigator = createBottomTabNavigator({
             )
         }
     },
+    CollabBoard: {
+        screen: CollabStack,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => (
+                <MaterialIcons
+                    name="dashboard"
+                    style={{color: tintColor}}
+                    size={28}
+                />
+            ),
+        }
+    },
     Messaging: {
         screen: MessagingStack,
         navigationOptions: {
@@ -58,9 +118,28 @@ const BottomTabNavigator = createBottomTabNavigator({
                 />
             )
         }
-    }
+    },
+    Profile: {
+        screen: ProfileStack,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => (
+                <FontAwesomeIcon
+                    name="user"
+                    style={{color: tintColor}}
+                    size={28}
+                />
+            ),
+        }
+    },
 }, {
-    tabBarOptions: {showLabel: false}
+    tabBarOptions: {
+        showLabel: false,
+        style: {
+            backgroundColor: '#eee',
+        },
+        activeTintColor: '#00BCD4',
+        inactiveTintColor: 'gray'
+    }
 });
 
 export default createAppContainer(BottomTabNavigator);

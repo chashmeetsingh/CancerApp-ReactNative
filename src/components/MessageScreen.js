@@ -14,7 +14,8 @@ export default class MatchesView extends Component {
 
     state = {
         userUids: [],
-        userList: []
+        userList: [],
+        messageIds: []
     };
 
     componentDidMount() {
@@ -22,31 +23,36 @@ export default class MatchesView extends Component {
     }
 
     getUserList = () => {
-        var uids = [];
         firebase.database().ref('/messages').on('value', (snapshot) => {
+            var uids = [];
+            var messageIds = [];
             for (var key in snapshot.val()) {
-                if (key.includes(firebase.auth().currentUser.uid)) {
+                if (key.includes(firebase.auth().currentUser.uid) && !messageIds.includes(key)) {
                     var uidList = key.split(',');
                     var otherUserId = uidList[0] != firebase.auth().currentUser.uid ? uidList[0] : uidList[1];
                     if (!uids.includes(otherUserId)) {
                         uids.push(otherUserId);
+                        messageIds.push(key);
                     }
                 }
             }
             // console.log(uids);
-            this.setState({userUids: uids}, () => {
+            this.setState({userUids: uids, messageIds: messageIds}, () => {
                 this.getUserInfo()
             });
         })
     };
 
     getUserInfo = () => {
-        this.state.userUids.map((uid) => {
+        this.state.userUids.map((uid, index) => {
             firebase.database().ref('/users/' + uid).once('value', (snapshot) => {
-                console.log(this.state.userList, snapshot.val());
-                this.setState({
-                    userList: [...this.state.userList, snapshot.val()]
-                })
+                let val = snapshot.val();
+                val['messageKey'] = this.state.messageIds[index];
+                if (!this.state.userList.includes(val)) {
+                    this.setState({
+                        userList: [...this.state.userList, val]
+                    })
+                }
             })
         });
     };

@@ -7,7 +7,7 @@ export default class MessageItem extends Component {
     handleMessageItemPressed = () => {
         console.log('tap: ' + this.props.user.name);
         const {navigate} = this.props.navigation;
-        navigate('MessageDetailView');
+        navigate('MessageDetailView', {user: this.props.user});
     };
 
     render() {

@@ -13,9 +13,14 @@ export default class MatchItem extends Component {
     collaborateButtonPressed = () => {
         const m = this.currentUser.uid + ',' + this.props.user.uid;
         firebase.database().ref('/messages/' + m).push({
-            createdAt: 'asda',
-            text: 'uid',
-            uid: 'uid'
+            _id: 2,
+            text: 'Hello developer',
+            createdAt: Date.now(),
+            user: {
+                _id: this.currentUser.uid,
+                name: this.currentUser.displayName,
+                avatar: this.currentUser.photoURL,
+            },
         })
     };
 
