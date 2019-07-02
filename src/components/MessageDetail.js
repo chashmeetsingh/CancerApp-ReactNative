@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import {GiftedChat} from 'react-native-gifted-chat'
 import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
 
 export default class MessageDetail extends Component {
 
@@ -11,20 +12,23 @@ export default class MessageDetail extends Component {
 
     componentDidMount() {
         this.messageKey = this.props.navigation.getParam('user').messageKey;
-        this.getMessages()
+        this.getMessages();
+        // this.listenAndAddMessages();
     }
 
     get user() {
-        const currentUser = firebase.auth().currentUser;
+        const currentUser = FirebaseSVC.shared().currentUser;
+
         return {
-            // name: currentUser.name,
+            name: currentUser.name,
             id: currentUser.uid,
-            _id: currentUser.uid
+            _id: currentUser.uid,
+            avatar: currentUser.photoUrl
         };
     }
 
     getMessages = () => {
-        firebase.database().ref('/messages/' + this.messageKey).once('value', (snapshot) => {
+        firebase.database().ref('/messages/' + this.messageKey).on('value', (snapshot) => {
             var messages = [];
             for (var key in snapshot.val()) {
                 messages.push(snapshot.val()[key]);
@@ -34,15 +38,9 @@ export default class MessageDetail extends Component {
     };
 
     onSend(messages = []) {
-        // console.log(messages);
         let message = messages[0];
         message.createdAt = Date.now();
-        firebase.database().ref('/messages/' + this.messageKey).push(message, () => {
-            console.log(message);
-            // this.setState(prevState => {
-            //     messages: GiftedChat.append(prevState.messages, message);
-            // })
-        });
+        firebase.database().ref('/messages/' + this.messageKey).push(message);
     }
 
     render() {

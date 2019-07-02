@@ -44,15 +44,15 @@ export default class MatchesView extends Component {
     };
 
     getUserInfo = () => {
+        var userList = [];
         this.state.userUids.map((uid, index) => {
             firebase.database().ref('/users/' + uid).once('value', (snapshot) => {
                 let val = snapshot.val();
                 val['messageKey'] = this.state.messageIds[index];
-                if (!this.state.userList.includes(val)) {
-                    this.setState({
-                        userList: [...this.state.userList, val]
-                    })
-                }
+                userList.push(val)
+            });
+            this.setState({
+                userList: [...userList]
             })
         });
     };
