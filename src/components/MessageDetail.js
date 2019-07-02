@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {GiftedChat} from 'react-native-gifted-chat'
+import {Bubble, GiftedChat} from 'react-native-gifted-chat'
 import * as firebase from 'firebase';
 import FirebaseSVC from "./FirebaseSVC";
 
@@ -43,11 +43,30 @@ export default class MessageDetail extends Component {
         firebase.database().ref('/messages/' + this.messageKey).push(message);
     }
 
+    renderBubble = (props) => {
+        return (
+            <Bubble
+                {...props}
+                textStyle={{
+                    right: {
+                        color: 'white',
+                    },
+                }}
+                wrapperStyle={{
+                    right: {
+                        backgroundColor: '#00BCD4',
+                    },
+                }}
+            />
+        );
+    };
+
     render() {
         return (
             <GiftedChat
                 messages={this.state.messages}
                 onSend={messages => this.onSend(messages)}
+                renderBubble={this.renderBubble}
                 user={this.user}
             />
         )
