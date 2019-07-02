@@ -10,15 +10,13 @@ export default class CollabItem extends Component {
     };
 
     componentDidMount() {
-        console.log(this.dynamicStyles().width, this.dynamicStyles().height);
         this.setState({
             itemStyle: {
                 width: this.dynamicStyles().width,
                 height: this.dynamicStyles().height,
                 margin: this.dynamicStyles().margin
-            }, fontSize: this.dynamicStyles().fontSize
-        }, () => {
-            // console.log(this.state.itemStyle)
+            },
+            fontSize: this.dynamicStyles().fontSize
         })
     }
 

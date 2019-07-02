@@ -1,32 +1,23 @@
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
-
-import AntDesignIcon from 'react-native-vector-icons/AntDesign';
-import {Button, Text} from 'react-native-elements'
+import {StyleSheet, Text, View} from 'react-native'
+import AntDesignIcon from "react-native-vector-icons/AntDesign";
+import {Button} from "react-native-elements";
 
 import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
 
-export default class MatchItem extends Component {
+export default class FavoriteItem extends Component {
 
-    currentUser = firebase.auth().currentUser;
-
-    collaborateButtonPressed = () => {
-
-    };
-
-    unfavoriteButtonTapped = () => {
-        firebase.database().ref('/saves/' + this.currentUser.uid).once('value', (snapshot) => {
-            var values = snapshot.val();
-            if (values === null) {
-                values = [];
+    unfavoriteButtonTapped() {
+        firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).once('value', snapshot => {
+            for (var key in snapshot.val()) {
+                if (snapshot.val()[key] === this.props.user.uid) {
+                    firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).child(key).remove();
+                    break;
+                }
             }
-            console.log(values);
-            if (!values.includes(this.props.user.uid) && this.props.user.uid != this.currentUser.uid) {
-                values.push(this.props.user.uid);
-            }
-            firebase.database().ref('/saves/' + this.currentUser.uid).set(values);
-        })
-    };
+        });
+    }
 
     render() {
         return (
@@ -49,7 +40,7 @@ export default class MatchItem extends Component {
                             onPress={() => this.collaborateButtonPressed()}
                         />
                         <Button
-                            title='Favorite'
+                            title='Unfavorite'
                             buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10}}
                             containerStyle={{flex: 1, margin: 4}}
                             titleStyle={{color: 'white'}}
@@ -60,7 +51,6 @@ export default class MatchItem extends Component {
             </View>
         )
     }
-
 }
 
 const styles = StyleSheet.create({

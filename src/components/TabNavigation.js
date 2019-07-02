@@ -10,6 +10,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MessageDetail from "./MessageDetail";
 import ProfileScreen from "./ProfileScreen";
 import CollabBoardScreen from "./CollabBoardScreen";
+import FavoritesScreen from "./FavoritesScreen";
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -82,6 +83,19 @@ MessagingStack.navigationOptions = ({navigation}) => {
     };
 };
 
+const SavesStack = createStackNavigator({
+    SavesView: {
+        screen: FavoritesScreen,
+        navigationOptions: {
+            title: 'Favorites',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    }
+});
+
 const BottomTabNavigator = createBottomTabNavigator({
     Matches: {
         screen: MatchesStack,
@@ -101,6 +115,18 @@ const BottomTabNavigator = createBottomTabNavigator({
             tabBarIcon: ({tintColor}) => (
                 <MaterialIcons
                     name="dashboard"
+                    style={{color: tintColor}}
+                    size={28}
+                />
+            ),
+        }
+    },
+    Saves: {
+        screen: SavesStack,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => (
+                <MaterialIcons
+                    name="favorite"
                     style={{color: tintColor}}
                     size={28}
                 />

@@ -5,22 +5,13 @@ import FirebaseSVC from "./FirebaseSVC";
 
 export default class ProfileScreen extends Component {
 
-    static nvaigationOptions = {
-        header: {
-            title: "Title",
-            style: {
-                backgroundColor: 'red'
-            },
-            tintColor: 'red'
-        }
-    };
-
     state = {
         user: {}
     };
 
     async componentDidMount() {
         this.currentUser = FirebaseSVC.shared().currentUser;
+        console.log(this.currentUser);
         this.setState({
             user: this.currentUser
         })
@@ -54,7 +45,7 @@ export default class ProfileScreen extends Component {
                         containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14, height: 20}}
                         autoCompleteType='off'
-                        value={this.state.title}
+                        value={this.state.user.title}
                     />
                     <Input
                         placeholder='Affiliation'
@@ -68,7 +59,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(affiliation) => this.setState({affiliation: affiliation})}
-                        value={this.state.affiliation}
+                        value={this.state.user.affiliation}
                     />
                     <Input
                         placeholder='Location'
@@ -82,7 +73,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(location) => this.setState({location: location})}
-                        value={this.state.location}
+                        value={this.state.user.location}
                     />
                     <Input
                         placeholder='Experience'
@@ -96,7 +87,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(experience) => this.setState({experience: experience})}
-                        value={this.state.experience}
+                        value={this.state.user.experience}
                     />
                     <Input
                         placeholder='Research Fields'
@@ -110,7 +101,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(research_fields) => this.setState({research_fields: research_fields})}
-                        value={this.state.research_fields}
+                        value={this.state.user.research_fields}
                     />
                     <Input
                         placeholder='Website Link'
@@ -124,7 +115,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(website_link) => this.setState({website_link: website_link})}
-                        value={this.state.website_link}
+                        value={this.state.user.website_link}
                     />
                     <Input
                         placeholder='Keywords'
@@ -138,7 +129,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(keywords) => this.setState({keywords: keywords})}
-                        value={this.state.keywords}
+                        value={this.state.user.keywords}
                     />
                     <Input
                         placeholder='Bio'
@@ -152,7 +143,7 @@ export default class ProfileScreen extends Component {
                         inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
                         autoCompleteType='off'
                         // onChangeText={(bio) => this.setState({bio: bio})}
-                        value={this.state.bio}
+                        value={this.state.user.bio}
                     />
                 </View>
             </ScrollView>
