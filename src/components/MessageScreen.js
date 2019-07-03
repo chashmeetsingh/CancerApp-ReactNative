@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
+import {FlatList, StyleSheet, View, Text} from 'react-native';
 import MessageItem from "./MessageItem";
 
 import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
 
-export default class MatchesView extends Component {
+export default class MessageScreen extends Component {
 
     static navigationOptions = {
-        title: 'Messaging',
-        headerTitle: 'Messaging',
-        tabBarLabel: 'Messaging'
+        headerTitle: 'Messaging'
     };
 
     state = {
@@ -19,13 +18,39 @@ export default class MatchesView extends Component {
     };
 
     componentDidMount() {
-        this.getUserList()
+      this.mounted = true
+      this.getUserList()
+
+      this.propsReceived = this.props.navigation.addListener('willFocus', () => {
+        if (FirebaseSVC.shared().propsData !== null) {
+          this.openChatIfIdExists();
+        }
+      })
+
+    }
+
+    componentWillUnmount() {
+      this.mounted = false
+      this.propsReceived.remove()
+    }
+
+    openChatIfIdExists() {
+      var {user, mid} = FirebaseSVC.shared().propsData;
+
+      if (user && mid) {
+        var user = user;
+        user['messageKey'] = mid;
+
+        this.props.navigation.navigate('MessageDetailView', {user: user})
+        FirebaseSVC.shared().setPropsData(null);
+      }
     }
 
     getUserList = () => {
         firebase.database().ref('/messages').on('value', (snapshot) => {
             var uids = [];
             var messageIds = [];
+
             for (var key in snapshot.val()) {
                 if (key.includes(firebase.auth().currentUser.uid) && !messageIds.includes(key)) {
                     var uidList = key.split(',');
@@ -36,9 +61,14 @@ export default class MatchesView extends Component {
                     }
                 }
             }
-            // console.log(uids);
             this.setState({userUids: uids, messageIds: messageIds}, () => {
+              if(this.state.userUids.length > 0) {
                 this.getUserInfo()
+              } else {
+                this.setState({
+                  userList: []
+                })
+              }
             });
         })
     };
@@ -59,13 +89,23 @@ export default class MatchesView extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <FlatList
-                    data={this.state.userList}
-                    renderItem={({item}) => <MessageItem user={item} navigation={this.props.navigation}/>}
-                    keyExtractor={(item) => item.uid}
-                />
-            </View>
+          <View style={styles.container}>
+              {
+                this.state.userList.length > 0
+                ?
+
+                  <FlatList
+                      data={this.state.userList}
+                      renderItem={({item}) => <MessageItem user={item} navigation={this.props.navigation}/>}
+                      keyExtractor={(item) => item.uid}
+                  />
+
+                :
+                <View style={styles.noMessageContainer}>
+                  <Text>No messages found.</Text>
+                </View>
+              }
+          </View>
         )
     }
 }
@@ -74,5 +114,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#eee'
+    },
+    noMessageContainer: {
+      flex: 1,
+      backgroundColor: '#eee',
+      alignItems: 'center',
+      justifyContent: 'center'
     }
 });

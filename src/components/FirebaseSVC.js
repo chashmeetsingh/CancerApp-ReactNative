@@ -6,6 +6,8 @@ export default class FirebaseSVC {
     static instance = null;
     currentUser = {};
 
+    propsData = {}
+
     constructor() {
         this.getCurrentUser()
     }
@@ -26,6 +28,10 @@ export default class FirebaseSVC {
                 photoUrl: userData.photoURL
             };
         });
+    }
+
+    setPropsData(data) {
+      this.propsData = data
     }
 
 }

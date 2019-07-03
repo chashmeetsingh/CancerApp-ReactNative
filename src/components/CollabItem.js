@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
-import {Dimensions, StyleSheet, View} from 'react-native'
+import {Dimensions, StyleSheet, TouchableOpacity} from 'react-native'
 import {Text} from 'react-native-elements'
+
+import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
 
 export default class CollabItem extends Component {
 
@@ -8,6 +11,26 @@ export default class CollabItem extends Component {
         itemStyle: {width: 10, height: 10},
         fontSize: 0,
     };
+
+    handleItemPress = () => {
+      console.log('pressed');
+      this.getLatestArticles()
+    }
+
+    getLatestArticles() {
+      const newData = {
+        name: 'new fevere',
+        createdAt: Date.now(),
+        user: {
+          id: FirebaseSVC.shared().currentUser.uid
+        }
+      };
+      firebase.database().ref('/collabs').orderByChild('name').equalTo(newData.name).once('value', snapshot => {
+        if (snapshot.val() === null) {
+          firebase.database().ref('/collabs').push(newData);
+        }
+      })
+    }
 
     componentDidMount() {
         this.setState({
@@ -18,6 +41,7 @@ export default class CollabItem extends Component {
             },
             fontSize: this.dynamicStyles().fontSize
         })
+        console.log(this.props.item);
     }
 
     dynamicStyles = () => {
@@ -47,9 +71,9 @@ export default class CollabItem extends Component {
 
     render() {
         return (
-            <View style={{...styles.container, ...this.state.itemStyle}}>
-                <Text style={{fontSize: 17}}>Article {this.props.index}</Text>
-            </View>
+            <TouchableOpacity style={{...styles.container, ...this.state.itemStyle}} onPress={this.handleItemPress}>
+                <Text style={{fontSize: 17}}>#{this.props.item.name}</Text>
+            </TouchableOpacity>
         )
     }
 }
@@ -58,7 +82,7 @@ const styles = StyleSheet.create({
     container: {
         // width: '50%',
         backgroundColor: 'white',
-        margin: 3,
+        // margin: 3,
         // alignItems: 'center'
         borderRadius: 5,
         // padding: 4,

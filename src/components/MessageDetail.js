@@ -10,10 +10,20 @@ export default class MessageDetail extends Component {
         messages: []
     };
 
+    constructor(props) {
+      super(props);
+
+      this.mounted = false
+    }
+
     componentDidMount() {
+      this.mounted = true
         this.messageKey = this.props.navigation.getParam('user').messageKey;
         this.getMessages();
-        // this.listenAndAddMessages();
+    }
+
+    componentWillUnmount() {
+      this.mounted = false
     }
 
     get user() {
@@ -27,13 +37,13 @@ export default class MessageDetail extends Component {
         };
     }
 
-    getMessages = () => {
+    async getMessages() {
         firebase.database().ref('/messages/' + this.messageKey).on('value', (snapshot) => {
             var messages = [];
             for (var key in snapshot.val()) {
                 messages.push(snapshot.val()[key]);
             }
-            this.setState({messages: messages.reverse()});
+            this.mounted && this.setState({messages: messages.reverse()});
         })
     };
 

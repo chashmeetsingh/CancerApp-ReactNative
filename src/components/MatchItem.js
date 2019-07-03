@@ -5,22 +5,38 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import {Button, Text} from 'react-native-elements'
 
 import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
 
 export default class MatchItem extends Component {
 
     currentUser = firebase.auth().currentUser;
 
     collaborateButtonPressed = () => {
+      const mid1 = this.currentUser.uid + ',' + this.props.user.uid
+      const mid2 = this.props.user.uid + ',' + this.currentUser.uid
 
+      firebase.database().ref('/messages/' + mid1).once('value', snapshot => {
+        if (snapshot.val() !== null) {
+          FirebaseSVC.shared().setPropsData({mid: mid1, user: this.props.user});
+          this.props.navigation.navigate('Messaging');
+        } else {
+          firebase.database().ref('/messages/' + mid2).once('value', snapshot => {
+            if (snapshot.val() !== null) {
+              FirebaseSVC.shared().setPropsData({mid: mid2, user: this.props.user});
+              this.props.navigation.navigate('Messaging');
+            } else {
+              FirebaseSVC.shared().setPropsData({mid: mid2, user: this.props.user});
+              this.props.navigation.navigate('Messaging');
+            }
+          })
+        }
+      })
     };
 
     unfavoriteButtonTapped = () => {
         firebase.database().ref('/saves/' + this.currentUser.uid).once('value', (snapshot) => {
-            var values = snapshot.val();
-            if (values === null) {
-                values = [];
-            }
-            console.log(values);
+            var values = snapshot.val() === null ? [] : snapshot.val();
+
             if (!values.includes(this.props.user.uid) && this.props.user.uid != this.currentUser.uid) {
                 values.push(this.props.user.uid);
             }

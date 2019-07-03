@@ -1,14 +1,35 @@
 import React, {Component} from 'react'
-import {ImageBackground, ScrollView, Text, View} from 'react-native'
+import {ImageBackground, ScrollView, Text, View, FlatList} from 'react-native'
 
 import BulletinBoardImage from '../../assets/bulletin-board.jpg'
 import CollabItem from "./CollabItem";
 
+import * as firebase from 'firebase';
+import FirebaseSVC from "./FirebaseSVC";
+
 export default class CollabBoardScreen extends Component {
 
     state = {
-        articles: [{id: 1}, {id: 2}, {id: 3}, {id: 4}, {id: 5}, {id: 6}, {id: 7}, {id: 8}, {id: 9}, {id: 10},]
+        collabs: []
     };
+
+    getCollabs = () => {
+      firebase.database().ref('/collabs').on('value', snapshot => {
+        var collabs = [];
+        for (var key in snapshot.val()) {
+          var collab = snapshot.val()[key];
+          collab['id'] = key;
+          collabs.push(collab);
+        }
+        this.setState({
+          collabs: collabs
+        })
+      })
+    }
+
+    componentDidMount() {
+      this.getCollabs()
+    }
 
     render() {
         return (
@@ -22,15 +43,11 @@ export default class CollabBoardScreen extends Component {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <CollabItem index={0}/>
-                        <CollabItem index={1}/>
-                        <CollabItem index={2}/>
-                        <CollabItem index={3}/>
-                        <CollabItem index={4}/>
-                        <CollabItem index={5}/>
-                        <CollabItem index={6}/>
-                        <CollabItem index={7}/>
-                        <CollabItem index={8}/>
+                      {
+                        this.state.collabs.map((item, index) => {
+                          return <CollabItem index={index} item={item} key={item.id} />
+                        })
+                      }
                     </View>
                     <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold', color: 'white'}}>Past Week</Text>
                     <View style={{
@@ -41,15 +58,11 @@ export default class CollabBoardScreen extends Component {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <CollabItem index={0}/>
-                        <CollabItem index={1}/>
-                        <CollabItem index={2}/>
-                        <CollabItem index={3}/>
-                        <CollabItem index={4}/>
-                        <CollabItem index={5}/>
-                        <CollabItem index={6}/>
-                        <CollabItem index={7}/>
-                        <CollabItem index={8}/>
+                      {
+                        this.state.collabs.map((item, index) => {
+                          return <CollabItem index={index} item={item} key={item.id} />
+                        })
+                      }
                     </View>
                 </ScrollView>
             </ImageBackground>

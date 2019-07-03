@@ -31,7 +31,7 @@ export default class MatchesScreen extends Component {
             <View style={styles.container}>
                 <FlatList
                     data={this.state.userList}
-                    renderItem={({item}) => <MatchItem user={item}/>}
+                    renderItem={({item}) => <MatchItem user={item} navigation={this.props.navigation} />}
                     keyExtractor={(item) => item.uid}
                 />
             </View>

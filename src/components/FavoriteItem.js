@@ -8,6 +8,10 @@ import FirebaseSVC from "./FirebaseSVC";
 
 export default class FavoriteItem extends Component {
 
+  collaborateButtonPressed() {
+    
+  }
+
     unfavoriteButtonTapped() {
         firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).once('value', snapshot => {
             for (var key in snapshot.val()) {
