@@ -13,23 +13,7 @@ export default class CollabItem extends Component {
     };
 
     handleItemPress = () => {
-      console.log('pressed');
-      this.getLatestArticles()
-    }
-
-    getLatestArticles() {
-      const newData = {
-        name: 'new fevere',
-        createdAt: Date.now(),
-        user: {
-          id: FirebaseSVC.shared().currentUser.uid
-        }
-      };
-      firebase.database().ref('/collabs').orderByChild('name').equalTo(newData.name).once('value', snapshot => {
-        if (snapshot.val() === null) {
-          firebase.database().ref('/collabs').push(newData);
-        }
-      })
+      this.props.navigation.navigate('DiscussionView', {collab: this.props.item});
     }
 
     componentDidMount() {
@@ -41,7 +25,6 @@ export default class CollabItem extends Component {
             },
             fontSize: this.dynamicStyles().fontSize
         })
-        console.log(this.props.item);
     }
 
     dynamicStyles = () => {

@@ -11,7 +11,6 @@ export default class ProfileScreen extends Component {
 
     async componentDidMount() {
         this.currentUser = FirebaseSVC.shared().currentUser;
-        console.log(this.currentUser);
         this.setState({
             user: this.currentUser
         })
