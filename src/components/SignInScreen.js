@@ -7,6 +7,8 @@ import * as firebase from 'firebase';
 import * as Facebook from 'expo-facebook';
 import CompleteDetails from "./CompleteDetails";
 
+import {Google} from "expo"
+
 export default class SignInScreen extends Component {
 
     static navigationOptions = {
@@ -79,7 +81,7 @@ export default class SignInScreen extends Component {
                                 keywords: "",
                                 bio: "",
                                 uid: result.user.uid,
-                                name: snapshot.val().username
+                                name: snapshot.val().displayName
                             };
                             firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
                                 this.completeDetails(defaultUserProfileValues);
@@ -92,6 +94,63 @@ export default class SignInScreen extends Component {
                 console.log(error);
             });
         }
+    }
+
+    async loginWithGoogle() {
+      try {
+        const result = await Google.logInAsync({
+          // androidClientId: "YOUR_CLIENT_ID_HERE",
+          iosClientId: '111862271681-pkg69pfass94hr0lbhmcg25lua4277uc.apps.googleusercontent.com',
+          scopes: ["profile", "email"],
+          // behavior: 'web'
+        })
+
+        if (result.type === "success") {
+          // Build Firebase credential with the Facebook access token.
+          const credential = firebase.auth.GoogleAuthProvider.credential(result.idToken, result.accessToken);
+
+          // Sign in with credential from the Facebook userList.
+          firebase
+              .auth()
+              .signInWithCredential(credential)
+              .then((result) => {
+                  firebase.database().ref('/users/' + result.user.uid).once('value').then((snapshot) => {
+                      if (snapshot.val()) {
+                          for (var key in snapshot.val()) {
+                              if (snapshot.val()[key] === "") {
+                                  this.completeDetails(snapshot.val());
+                                  return;
+                              }
+                          }
+                      } else {
+                          const defaultUserProfileValues = {
+                              title: "",
+                              affiliation: "",
+                              location: "",
+                              experience: "",
+                              research_fields: "",
+                              website_link: "",
+                              keywords: "",
+                              bio: "",
+                              uid: result.user.uid,
+                              name: snapshot.val().username
+                          };
+                          firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
+                              this.completeDetails(defaultUserProfileValues);
+
+                          });
+                      }
+                  })
+              })
+              .catch((error) => {
+              console.log(error);
+          });
+        } else {
+          console.log("cancelled")
+        }
+      } catch (e) {
+        console.log("error", e)
+      }
     }
 
     render() {
@@ -137,7 +196,7 @@ export default class SignInScreen extends Component {
                                     color="white"
                                 />
                             }
-                            onPress={() => navigate('Home')}
+                            onPress={() => this.loginWithGoogle()}
                             title='Continue with Google'
                             buttonStyle={{backgroundColor: '#dc4e41', borderRadius: 10, alignItems: 'center', justifyContent: 'flex-start', paddingLeft: 20}}
                             containerStyle={{width: '90%', margin: 10}}
