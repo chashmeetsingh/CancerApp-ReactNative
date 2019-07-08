@@ -11,6 +11,7 @@ import {
 import UserProfile from './UserProfile'
 import Projects from './Projects'
 import Questions from './Questions'
+import Ideas from './Ideas'
 
 import * as firebase from 'firebase';
 
@@ -52,7 +53,7 @@ export default class ProfileScreen extends Component {
     case '3':
       return <Questions />;
     case '4':
-      return <View style={[ styles.page, { backgroundColor: '#009688' } ]} />;
+      return <Ideas />;
     default:
       return null;
     }

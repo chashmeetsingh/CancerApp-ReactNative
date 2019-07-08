@@ -54,7 +54,7 @@ export default class Projects extends Component {
             projectURLs.push(url);
         }
         this.setState({
-          projectList: projectURLs
+          projectList: projectURLs.reverse()
         })
       }
     })

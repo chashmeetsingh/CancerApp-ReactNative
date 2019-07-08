@@ -1,50 +1,50 @@
 import React, {Component} from 'react'
 import {View, Text, StyleSheet, FlatList} from 'react-native'
 import {Button} from 'react-native-elements'
-import QuestionItem from './QuestionItem'
+import IdeaItem from './IdeaItem'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import FirebaseSVC from "./FirebaseSVC";
 import * as firebase from 'firebase';
 import Dialog from "react-native-dialog";
 
-export default class Question extends Component {
+export default class Ideas extends Component {
 
   state = {
-    questionList: [],
-    question: '',
+    ideaList: [],
+    idea: '',
     isDialogVisible: false,
   }
 
   componentDidMount() {
     this.currentUser = FirebaseSVC.shared().currentUser;
-    this.getQuestions();
+    this.getIdeas();
   }
 
-  getQuestions() {
-    firebase.database().ref('/users/' + this.currentUser.uid + '/questions').on('value', snapshot => {
+  getIdeas() {
+    firebase.database().ref('/users/' + this.currentUser.uid + '/ideas').on('value', snapshot => {
       if (snapshot.val() !== null) {
-        var questions = [];
+        var ideas = [];
         for (var id in snapshot.val()) {
-          var question = snapshot.val()[id];
-          question['key'] = id;
-            questions.push(question);
+          var idea = snapshot.val()[id];
+          idea['key'] = id;
+            ideas.push(idea);
         }
         this.setState({
-          questionList: questions.reverse()
+          ideaList: ideas.reverse()
         })
       }
     })
   }
 
-  addQuestionButtonPressed() {
+  addIdeaButtonPressed() {
     this.setState({
       isDialogVisible: true
     })
   }
 
   addButtonPressed() {
-    firebase.database().ref('/users/' + this.currentUser.uid + '/questions').push({
-      question: this.state.question
+    firebase.database().ref('/users/' + this.currentUser.uid + '/ideas').push({
+      idea: this.state.idea
     }).then(() => {
       this.showDialog(false);
     })
@@ -74,18 +74,18 @@ export default class Question extends Component {
                 color="white"
               />
             }
-            title='Add Question'
+            title='Add Idea'
             buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, margin: 8}}
             titleStyle={{color: 'white', marginLeft: 10}}
-            onPress={() => this.addQuestionButtonPressed()}
+            onPress={() => this.addIdeaButtonPressed()}
         />
         <FlatList
-          data={this.state.questionList}
-          renderItem={({item}) => <QuestionItem data={item} />}
+          data={this.state.ideaList}
+          renderItem={({item}) => <IdeaItem data={item} />}
         />
         <Dialog.Container visible={this.state.isDialogVisible}>
-          <Dialog.Title>Add a question</Dialog.Title>
-          <Dialog.Input onChangeText={(text) => this.setState({question: text})}></Dialog.Input>
+          <Dialog.Title>Add an idea</Dialog.Title>
+          <Dialog.Input onChangeText={(text) => this.setState({idea: text})}></Dialog.Input>
           <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
         <Dialog.Button label="Add" onPress={() => this.addButtonPressed()} />
         </Dialog.Container>

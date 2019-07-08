@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, AsyncStorage } from 'react-native';
 import { Button, Text } from 'react-native-elements';
+import SignInScreen from './SignInScreen'
 
 export default class WelcomeScreen extends Component {
 
@@ -8,20 +9,39 @@ export default class WelcomeScreen extends Component {
         header: null
     };
 
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        firstLaunch: null
+      };
+    }
+
+    componentDidMount() {
+      AsyncStorage.getItem('alreadyLaunched').then(value => {
+        if (value === null) {
+          AsyncStorage.setItem('alreadyLaunched', 'true');
+        } else {
+          this.setState({firstLaunch: false})
+        }
+      })
+    }
+
     render() {
-        const {navigate} = this.props.navigation;
-        return (
-            <View style={styles.container}>
-                <Text h3 style={styles.welcomeText}>Welcome</Text>
-                <Button
-                    title='Sign In'
-                    buttonStyle={styles.signInButton}
-                    containerStyle={styles.signInButtonContainer}
-                    titleStyle={styles.signInButtonTitle}
-                    onPress={() => navigate('SignIn')}
-                />
-            </View>
-        )
+      if (this.state.firstLaunch == true || this.state.firstLaunch == null) {
+        return (<View style={styles.container}>
+            <Text h3 style={styles.welcomeText}>Welcome</Text>
+            <Button
+                title='Sign In'
+                buttonStyle={styles.signInButton}
+                containerStyle={styles.signInButtonContainer}
+                titleStyle={styles.signInButtonTitle}
+                onPress={() => this.props.navigation.navigate('SignIn')}
+            />
+        </View>)
+      } else {
+        return <SignInScreen navigation={this.props.navigation} />
+      }
     }
 
 }
