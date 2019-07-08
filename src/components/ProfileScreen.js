@@ -1,63 +1,122 @@
 import React, {Component} from 'react';
 import {Dimensions, Image, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Input} from "react-native-elements";
-import FirebaseSVC from "./FirebaseSVC";
+import {
+  TabView,
+  TabBar,
+  SceneMap,
+  NavigationState,
+  SceneRendererProps,
+} from 'react-native-tab-view';
+import UserProfile from './UserProfile'
+import Projects from './Projects'
+import Questions from './Questions'
+
+import * as firebase from 'firebase';
 
 export default class ProfileScreen extends Component {
 
-    state = {
-        user: {}
-    };
+  state = {
+    index: 0,
+    routes: [
+      { key: '1', title: 'Profile' },
+      { key: '2', title: 'Projects' },
+      { key: '3', title: 'Questions' },
+      { key: '4', title: 'Ideas' },
+    ],
+  };
 
-    async componentDidMount() {
-        this.currentUser = FirebaseSVC.shared().currentUser;
-        this.setState({
-            user: this.currentUser
-        })
-    }
+  handleIndexChange = (index) => {
+    this.setState({
+      index,
+    });
+  }
 
-    render() {
-        return (
-            <ScrollView style={styles.container}>
-                <View style={styles.imageContainer}>
-                    <Image
-                        style={styles.profileImage}
-                        source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/7/72/Default-welcomer.png'}}
-                    />
-                    <Button
-                        title='My Collabs'
-                        buttonStyle={{backgroundColor: 'white', borderRadius: 10, margin: 10}}
-                        containerStyle={{alignItems: 'center', justifyContent: 'center'}}
-                        titleStyle={{color: '#00BCD4'}}
-                        // onPress={() => this.updateUserProfile()}
-                    />
-                </View>
-            </ScrollView>
-        )
+  renderTabBar = (props) => (
+      <TabBar
+        {...props}
+        scrollEnabled
+        indicatorStyle={styles.indicator}
+        style={styles.tabbar}
+        tabStyle={styles.tab}
+        labelStyle={styles.label}
+      />
+  );
+
+  renderScene = ({ route }) => {
+    switch (route.key) {
+    case '1':
+      return <UserProfile />;
+    case '2':
+      return <Projects />;
+    case '3':
+      return <Questions />;
+    case '4':
+      return <View style={[ styles.page, { backgroundColor: '#009688' } ]} />;
+    default:
+      return null;
     }
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+          <View style={styles.imageContainer}>
+              <Image
+                  style={styles.profileImage}
+                  source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/7/72/Default-welcomer.png'}}
+              />
+              <Button
+                  title='My Collabs'
+                  buttonStyle={{backgroundColor: 'white', borderRadius: 10, margin: 10}}
+                  containerStyle={{alignItems: 'center', justifyContent: 'center'}}
+                  titleStyle={{color: '#00BCD4'}}
+              />
+          </View>
+          <TabView
+            navigationState={this.state}
+            renderScene={this.renderScene}
+            renderTabBar={this.renderTabBar}
+            onIndexChange={this.handleIndexChange}
+          />
+      </View>
+
+    );
+  }
+
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#eee',
-    },
-    imageContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10,
-        backgroundColor: '#00BCD4',
-        flexDirection: 'column',
-    },
-    profileImage: {
-        width: Dimensions.get('window').width / 2.5,
-        height: Dimensions.get('window').width / 2.5,
-        borderRadius: Dimensions.get('window').width / 5,
-        backgroundColor: 'gray'
-    },
-    profileDataContainer: {
-        padding: 4,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
+  container: {
+    flex: 1,
+  },
+  imageContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 10,
+      backgroundColor: '#00BCD4',
+      flexDirection: 'column',
+  },
+  profileImage: {
+      width: Dimensions.get('window').width / 2.5,
+      height: Dimensions.get('window').width / 2.5,
+      borderRadius: Dimensions.get('window').width / 5,
+      backgroundColor: 'gray'
+  },
+  tabbar: {
+    backgroundColor: '#00BCD4',
+  },
+  page: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  indicator: {
+    backgroundColor: '#008080',
+    height: 4
+  },
+  label: {
+    color: '#fff',
+    fontWeight: '400',
+  },
 });

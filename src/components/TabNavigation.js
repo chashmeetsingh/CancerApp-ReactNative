@@ -21,9 +21,13 @@ const MatchesStack = createStackNavigator({
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#00BCD4',
-            }
+            },
         }
     }
+}, {
+  defaultNavigationOptions: {
+    gesturesEnabled: false
+  }
 });
 
 const MessagingStack = createStackNavigator({

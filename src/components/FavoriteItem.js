@@ -9,7 +9,7 @@ import FirebaseSVC from "./FirebaseSVC";
 export default class FavoriteItem extends Component {
 
   collaborateButtonPressed() {
-    
+
   }
 
     unfavoriteButtonTapped() {
@@ -28,7 +28,7 @@ export default class FavoriteItem extends Component {
             <View style={styles.outerContainer}>
                 <AntDesignIcon
                     name="star"
-                    style={{color: '#DFDF00', margin: 8}}
+                    style={{color: '#008080', margin: 8}}
                     size={28}
                 />
                 <View style={styles.innerContainer}>

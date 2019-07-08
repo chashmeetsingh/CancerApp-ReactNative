@@ -30,9 +30,7 @@ export default class CompleteDetails extends Component {
                     containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
                     inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14, height: 20}}
                     autoCompleteType='off'
-                    onChangeText={(title) => this.setState({title: title}, () => {
-                        console.log(this.state)
-                    })}
+                    onChangeText={(title) => this.setState({title: title})}
                     value={this.state.title}
                 />
                 <Input

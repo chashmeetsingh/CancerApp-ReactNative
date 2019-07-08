@@ -58,14 +58,7 @@ export default class CollabBoardScreen extends Component {
       if (snapshot.val() === null) {
         firebase.database().ref('/collabs').push(data);
       }
-      this.handleCancelDialog();
-    })
-  }
-
-  handleCancelDialog() {
-    this.setState({
-      isDialogVisible: false,
-      topic: ''
+      this.showDialog(false);
     })
   }
 

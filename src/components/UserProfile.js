@@ -1,12 +1,27 @@
 import React, {Component} from 'react'
-import {Text, View, StyleSheet, Input} from 'react-native'
+import {Text, View, StyleSheet, ScrollView} from 'react-native'
+import {Input} from 'react-native-elements'
+
+import FirebaseSVC from "./FirebaseSVC";
 
 export default class UserProfile extends Component {
 
+  state = {
+        user: {}
+    };
+
+  async componentDidMount() {
+        this.currentUser = FirebaseSVC.shared().currentUser;
+
+        this.setState({
+            user: this.currentUser
+        })
+    }
+
   render() {
     return (
-      <View>
-          <Input
+      <ScrollView style={styles.profileDataContainer}>
+        <Input
               placeholder='Title'
               inputContainerStyle={{
                   borderWidth: 0.5,
@@ -17,7 +32,7 @@ export default class UserProfile extends Component {
               containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14, height: 20}}
               autoCompleteType='off'
-              // value={this.state.user.title}
+              value={this.state.user.title}
           />
           <Input
               placeholder='Affiliation'
@@ -31,7 +46,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(affiliation) => this.setState({affiliation: affiliation})}
-              // value={this.state.user.affiliation}
+              value={this.state.user.affiliation}
           />
           <Input
               placeholder='Location'
@@ -45,7 +60,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(location) => this.setState({location: location})}
-              // value={this.state.user.location}
+              value={this.state.user.location}
           />
           <Input
               placeholder='Experience'
@@ -59,7 +74,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(experience) => this.setState({experience: experience})}
-              // value={this.state.user.experience}
+              value={this.state.user.experience}
           />
           <Input
               placeholder='Research Fields'
@@ -73,7 +88,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(research_fields) => this.setState({research_fields: research_fields})}
-              // value={this.state.user.research_fields}
+              value={this.state.user.research_fields}
           />
           <Input
               placeholder='Website Link'
@@ -87,7 +102,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(website_link) => this.setState({website_link: website_link})}
-              // value={this.state.user.website_link}
+              value={this.state.user.website_link}
           />
           <Input
               placeholder='Keywords'
@@ -101,7 +116,7 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(keywords) => this.setState({keywords: keywords})}
-              // value={this.state.user.keywords}
+              value={this.state.user.keywords}
           />
           <Input
               placeholder='Bio'
@@ -115,10 +130,16 @@ export default class UserProfile extends Component {
               inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
               autoCompleteType='off'
               // onChangeText={(bio) => this.setState({bio: bio})}
-              // value={this.state.user.bio}
+              value={this.state.user.bio}
           />
-      </View>
+      </ScrollView>
     )
   }
 
 }
+
+const styles = StyleSheet.create({
+  profileDataContainer: {
+      margin: 4
+  }
+})

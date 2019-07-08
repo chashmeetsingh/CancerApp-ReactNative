@@ -20,14 +20,15 @@ export default class FirebaseSVC {
     }
 
     getCurrentUser() {
-        let userData = firebase.auth().currentUser;
-        firebase.database().ref('/users/' + userData.uid).once('value', snapshot => {
-            this.currentUser = {
-                ...snapshot.val(),
-                name: userData.displayName,
-                photoUrl: userData.photoURL
-            };
-        });
+      let userData = firebase.auth().currentUser;
+      firebase.database().ref('/users/' + userData.uid).once('value', snapshot => {
+          this.currentUser = {
+              ...snapshot.val(),
+              name: userData.displayName,
+              photoUrl: userData.photoURL
+          };
+          console.log(userData, snapshot.val())
+      });
     }
 
     setPropsData(data) {

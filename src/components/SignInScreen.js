@@ -81,18 +81,17 @@ export default class SignInScreen extends Component {
                                 keywords: "",
                                 bio: "",
                                 uid: result.user.uid,
-                                name: snapshot.val().displayName
+                                name: result.user.displayName
                             };
                             firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
                                 this.completeDetails(defaultUserProfileValues);
-
                             });
                         }
                     })
                 })
                 .catch((error) => {
-                console.log(error);
-            });
+                    console.log(error);
+                });
         }
     }
 
@@ -115,7 +114,7 @@ export default class SignInScreen extends Component {
               .signInWithCredential(credential)
               .then((result) => {
                   firebase.database().ref('/users/' + result.user.uid).once('value').then((snapshot) => {
-                      if (snapshot.val()) {
+                      if (snapshot.val() !== null) {
                           for (var key in snapshot.val()) {
                               if (snapshot.val()[key] === "") {
                                   this.completeDetails(snapshot.val());
@@ -123,6 +122,7 @@ export default class SignInScreen extends Component {
                               }
                           }
                       } else {
+                        console.log(snapshot.val())
                           const defaultUserProfileValues = {
                               title: "",
                               affiliation: "",
@@ -133,18 +133,18 @@ export default class SignInScreen extends Component {
                               keywords: "",
                               bio: "",
                               uid: result.user.uid,
-                              name: snapshot.val().username
+                              name: result.user.displayName
                           };
+                          console.log(defaultUserProfileValues, result);
                           firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
                               this.completeDetails(defaultUserProfileValues);
-
                           });
                       }
                   })
               })
               .catch((error) => {
-              console.log(error);
-          });
+                  console.log(error);
+              });
         } else {
           console.log("cancelled")
         }
