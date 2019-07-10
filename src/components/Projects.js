@@ -6,6 +6,7 @@ import FirebaseSVC from "./FirebaseSVC";
 import Dialog from "react-native-dialog";
 import * as firebase from 'firebase';
 import ProjectItem from './ProjectItem'
+import validate from './Validator'
 
 export default class Projects extends Component {
 
@@ -25,10 +26,20 @@ export default class Projects extends Component {
   }
 
   addButtonTapped() {
+    const urlError = validate('projectURL', this.state.projectURL)
+
+    this.setState({
+      urlError: urlError
+    });
+
+    if (urlError) {
+      return
+    }
+
     firebase.database().ref('/users/' + this.currentUser.uid + '/projects').push({
       url: this.state.projectURL
     })
-    this.showDialog(false)
+    this.cancelButtonTapped()
   }
 
   showDialog = (show) => {
@@ -83,7 +94,14 @@ export default class Projects extends Component {
         />
         <Dialog.Container visible={this.state.isDialogVisible}>
           <Dialog.Title>Add project url</Dialog.Title>
-          <Dialog.Input onChangeText={(text) => this.setState({question: text})}></Dialog.Input>
+          <Dialog.Input value={this.state.projectURL} onChangeText={(text) => this.setState({projectURL: text.toLowerCase()})}></Dialog.Input>
+          {
+            this.state.urlError
+            ? <Dialog.Description>
+              Invalid URL
+            </Dialog.Description>
+            : null
+          }
           <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
         <Dialog.Button label="Add" onPress={() => this.addButtonTapped()} />
         </Dialog.Container>

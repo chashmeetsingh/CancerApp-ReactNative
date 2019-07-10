@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
 
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import {Button, Text} from 'react-native-elements'
@@ -26,6 +26,12 @@ export default class MatchItem extends Component {
               this.props.navigation.navigate('Messaging');
             } else {
               FirebaseSVC.shared().setPropsData({mid: mid2, user: this.props.user});
+              firebase.database().ref('/messages/' + mid2).set({
+                createdAt: Date.now(),
+                list: [],
+                user: FirebaseSVC.shared().currentUser.uid,
+                status: 'waiting'
+              })
               this.props.navigation.navigate('Messaging');
             }
           })
@@ -44,9 +50,13 @@ export default class MatchItem extends Component {
         })
     };
 
+    itemTapped() {
+
+    }
+
     render() {
         return (
-            <View style={styles.outerContainer}>
+            <TouchableOpacity style={styles.outerContainer} onPress={() => this.itemTapped()}>
                 <AntDesignIcon
                     name="star"
                     style={{color: '#008080', margin: 8}}
@@ -73,7 +83,7 @@ export default class MatchItem extends Component {
                         />
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 

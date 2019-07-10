@@ -24,10 +24,6 @@ const MatchesStack = createStackNavigator({
             },
         }
     }
-}, {
-  defaultNavigationOptions: {
-    gesturesEnabled: false
-  }
 });
 
 const MessagingStack = createStackNavigator({

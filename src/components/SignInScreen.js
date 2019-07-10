@@ -35,7 +35,34 @@ export default class SignInScreen extends Component {
         firebase.auth().onAuthStateChanged((user) => {
             if (user != null) {
                 console.log("We are authenticated now!");
-                this.props.navigation.navigate('BottomTabNavigator');
+
+                firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
+                    if (snapshot.val() !== null) {
+                        for (var key in snapshot.val()) {
+                            if (snapshot.val()[key] === "") {
+                                this.completeDetails(snapshot.val());
+                                return;
+                            }
+                        }
+                        this.props.navigation.navigate('BottomTabNavigator');
+                    } else {
+                        const defaultUserProfileValues = {
+                          title: "",
+                          affiliation: "",
+                          location: "",
+                          experience: "",
+                          research_fields: "",
+                          website_link: "",
+                          keywords: "",
+                          bio: "",
+                          uid: user.uid,
+                          name: user.displayName
+                        };
+                        firebase.database().ref('/users/' + user.uid).set(defaultUserProfileValues).then(() => {
+                            this.completeDetails(defaultUserProfileValues);
+                        });
+                    }
+                })
             }
 
             // Do other things
@@ -122,7 +149,6 @@ export default class SignInScreen extends Component {
                               }
                           }
                       } else {
-                        console.log(snapshot.val())
                           const defaultUserProfileValues = {
                               title: "",
                               affiliation: "",

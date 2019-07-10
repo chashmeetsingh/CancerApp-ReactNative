@@ -25,9 +25,8 @@ export default class FirebaseSVC {
           this.currentUser = {
               ...snapshot.val(),
               name: userData.displayName,
-              photoUrl: userData.photoURL
+              photoUrl: userData.photoURL.replace("s96-c", "s256-c") + '?width=300&height=300'
           };
-          console.log(userData, snapshot.val())
       });
     }
 

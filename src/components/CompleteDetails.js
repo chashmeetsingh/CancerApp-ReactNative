@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {KeyboardAvoidingView, StyleSheet} from 'react-native';
 import {Button, Input} from 'react-native-elements';
 import * as firebase from 'firebase';
+import ValidatorTextField from './ValidatorTextField'
+import validate from './Validator'
 
 export default class CompleteDetails extends Component {
 
@@ -16,92 +18,101 @@ export default class CompleteDetails extends Component {
     }
 
     updateUserProfile = () => {
-        firebase.database().ref('/users/' + this.state.uid).set(this.state).then(() => {
-            this.props.navigation.navigate('BottomTabNavigator');
-        });
+
+      const titleError = validate('title', this.state.title);
+      const affiliationError = validate('affiliation', this.state.affiliation);
+      const locationError = validate('location', this.state.location);
+      const experienceError = validate('experience', this.state.experience);
+      const researchFieldsError = validate('research_fields', this.state.research_fields);
+      const websiteLinkError = validate('website_link', this.state.website_link);
+      const keywordsError = validate('keywords', this.state.keywords);
+      const bioError = validate('bio', this.state.bio);
+
+      this.setState({
+        titleError: titleError,
+        affiliationError: affiliationError,
+        locationError: locationError,
+        experienceError: experienceError,
+        researchFieldsError: researchFieldsError,
+        websiteLinkError: websiteLinkError,
+        keywordsError: keywordsError,
+        bioError: bioError
+      });
+
+      if (!titleError &&
+          !affiliationError &&
+          !locationError &&
+          !experienceError &&
+          !researchFieldsError &&
+          !websiteLinkError &&
+          !keywordsError &&
+          !bioError) {
+            // console.log('passed validation');
+            firebase.database().ref('/users/' + this.state.uid).set(this.state).then(() => {
+                this.props.navigation.navigate('BottomTabNavigator');
+            });
+      }
+
+
     };
 
     render() {
         return (
             <KeyboardAvoidingView behavior="padding" enabled style={styles.container} keyboardVerticalOffset={40}>
-                <Input
+                <ValidatorTextField
                     placeholder='Title'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14, height: 20}}
-                    autoCompleteType='off'
                     onChangeText={(title) => this.setState({title: title})}
                     value={this.state.title}
+                    error={this.state.titleError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Affiliation'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(affiliation) => this.setState({affiliation: affiliation})}
                     value={this.state.affiliation}
+                    error={this.state.affiliationError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Location'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(location) => this.setState({location: location})}
                     value={this.state.location}
+                    error={this.state.locationError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Experience'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(experience) => this.setState({experience: experience})}
                     value={this.state.experience}
+                    error={this.state.experienceError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Research Fields'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(research_fields) => this.setState({research_fields: research_fields})}
                     value={this.state.research_fields}
+                    error={this.state.researchFieldsError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Website Link'
-                    inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
-                    onChangeText={(website_link) => this.setState({website_link: website_link})}
+                    onChangeText={(website_link) => this.setState({website_link: website_link.toLowerCase()})}
                     value={this.state.website_link}
+                    error={this.state.websiteLinkError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Keywords'
-                    inputContainerStyle={{borderWidth: 0.3, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(keywords) => this.setState({keywords: keywords})}
                     value={this.state.keywords}
+                    error={this.state.keywordsError}
                 />
-                <Input
+                <ValidatorTextField
                     placeholder='Bio'
-                    inputContainerStyle={{borderWidth: 0.3, borderColor: '#BDBDBD', borderRadius: 10}}
-                    containerStyle={{margin: 4, marginBottom: 10}}
-                    inputStyle={{color: 'black', paddingLeft: 8, fontSize: 14}}
-                    autoCompleteType='off'
                     onChangeText={(bio) => this.setState({bio: bio})}
                     value={this.state.bio}
+                    multiline={true}
+                    error={this.state.bioError}
                 />
                 <Button
                     title='Update Profile'
                     buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, marginLeft: 10}}
                     containerStyle={{alignItems: 'center', justifyContent: 'center'}}
                     titleStyle={{color: 'white'}}
-                    multiline={true}
                     onPress={() => this.updateUserProfile()}
                 />
             </KeyboardAvoidingView>

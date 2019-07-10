@@ -12,7 +12,7 @@ import UserProfile from './UserProfile'
 import Projects from './Projects'
 import Questions from './Questions'
 import Ideas from './Ideas'
-
+import FirebaseSVC from "./FirebaseSVC";
 import * as firebase from 'firebase';
 
 export default class ProfileScreen extends Component {
@@ -61,11 +61,11 @@ export default class ProfileScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView behavior="padding" enabled keyboardVerticalOffset={40} style={styles.container}>
           <View style={styles.imageContainer}>
               <Image
                   style={styles.profileImage}
-                  source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/7/72/Default-welcomer.png'}}
+                  source={{uri: FirebaseSVC.shared().currentUser.photoUrl }}
               />
               <Button
                   title='My Collabs'
@@ -80,7 +80,7 @@ export default class ProfileScreen extends Component {
             renderTabBar={this.renderTabBar}
             onIndexChange={this.handleIndexChange}
           />
-      </View>
+      </ScrollView>
 
     );
   }
@@ -90,18 +90,19 @@ export default class ProfileScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#eee'
   },
   imageContainer: {
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 10,
+      padding: 8,
       backgroundColor: '#00BCD4',
       flexDirection: 'column',
   },
   profileImage: {
-      width: Dimensions.get('window').width / 2.5,
-      height: Dimensions.get('window').width / 2.5,
-      borderRadius: Dimensions.get('window').width / 5,
+      width: Dimensions.get('window').width / 3.5,
+      height: Dimensions.get('window').width / 3.5,
+      borderRadius: Dimensions.get('window').width / 7,
       backgroundColor: 'gray'
   },
   tabbar: {
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   },
   indicator: {
     backgroundColor: '#008080',
-    height: 4
+    height: 3
   },
   label: {
     color: '#fff',

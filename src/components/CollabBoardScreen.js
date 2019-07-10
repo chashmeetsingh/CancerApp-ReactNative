@@ -70,8 +70,11 @@ export default class CollabBoardScreen extends Component {
         collab['id'] = key;
         collabs.push(collab);
       }
+
       this.setState({
-        collabs: collabs
+        collabs: collabs.sort((a, b) =>
+          Object.values(a.messages !== undefined ? a.messages : []).length < Object.values(b.messages !== undefined ? b.messages : []).length
+        ).slice(0, 8)
       })
     })
   }

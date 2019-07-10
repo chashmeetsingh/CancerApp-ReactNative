@@ -6,6 +6,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import FirebaseSVC from "./FirebaseSVC";
 import * as firebase from 'firebase';
 import Dialog from "react-native-dialog";
+import validate from './Validator'
 
 export default class Question extends Component {
 
@@ -43,10 +44,20 @@ export default class Question extends Component {
   }
 
   addButtonPressed() {
+    const questionError = validate('question', this.state.question)
+
+    this.setState({
+      questionError: questionError
+    });
+
+    if (questionError) {
+      return
+    }
+
     firebase.database().ref('/users/' + this.currentUser.uid + '/questions').push({
       question: this.state.question
     }).then(() => {
-      this.showDialog(false);
+      this.cancelButtonTapped()
     })
   }
 
@@ -59,7 +70,7 @@ export default class Question extends Component {
   cancelButtonTapped() {
     this.setState({
       isDialogVisible: false,
-      projectURL: ''
+      question: ''
     })
   }
 
@@ -85,7 +96,14 @@ export default class Question extends Component {
         />
         <Dialog.Container visible={this.state.isDialogVisible}>
           <Dialog.Title>Add a question</Dialog.Title>
-          <Dialog.Input onChangeText={(text) => this.setState({question: text})}></Dialog.Input>
+          <Dialog.Input value={this.state.question} onChangeText={(text) => this.setState({question: text})}></Dialog.Input>
+            {
+              this.state.questionError
+              ? <Dialog.Description>
+                Please enter a question.
+              </Dialog.Description>
+              : null
+            }
           <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
         <Dialog.Button label="Add" onPress={() => this.addButtonPressed()} />
         </Dialog.Container>
