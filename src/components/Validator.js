@@ -63,6 +63,12 @@ const constraints = {
     length: {
       minimum: 1
     }
+  },
+  projectData: {
+    presence: true,
+    length: {
+      minimum: 1
+    }
   }
 }
 

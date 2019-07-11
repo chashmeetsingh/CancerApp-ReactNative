@@ -3,9 +3,13 @@ import {TouchableOpacity, Text, StyleSheet} from 'react-native'
 
 export default class QuestionItem extends Component {
 
+  handleItemPressed() {
+    this.props.navigation.navigate('QuestionDetailView', {question: this.props.data})
+  }
+
   render() {
     return (
-      <TouchableOpacity style={styles.container}>
+      <TouchableOpacity style={styles.container} onPress={() => this.handleItemPressed()}>
         <Text>{this.props.data.question}</Text>
       </TouchableOpacity>
     )

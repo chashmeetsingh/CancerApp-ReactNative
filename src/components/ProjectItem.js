@@ -3,13 +3,13 @@ import {TouchableOpacity, Text, StyleSheet} from 'react-native'
 
 export default class ProjectItem extends Component {
 
-  componentDidMount() {
-
+  projectItemPressed() {
+    this.props.navigation.navigate('ProfileDetailView', {project: this.props.data})
   }
 
   render() {
     return (
-      <TouchableOpacity style={styles.container}>
+      <TouchableOpacity style={styles.container} onPress={() => this.projectItemPressed()}>
         <Text>{this.props.data.url}</Text>
       </TouchableOpacity>
     )

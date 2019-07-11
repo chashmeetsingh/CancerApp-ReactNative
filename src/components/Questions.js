@@ -92,7 +92,7 @@ export default class Question extends Component {
         />
         <FlatList
           data={this.state.questionList}
-          renderItem={({item}) => <QuestionItem data={item} />}
+          renderItem={({item}) => <QuestionItem data={item} navigation={this.props.navigation} />}
         />
         <Dialog.Container visible={this.state.isDialogVisible}>
           <Dialog.Title>Add a question</Dialog.Title>

@@ -12,6 +12,8 @@ import ProfileScreen from "./ProfileScreen";
 import CollabBoardScreen from "./CollabBoardScreen";
 import FavoritesScreen from "./FavoritesScreen";
 import DiscussionScreen from "./DiscussionScreen"
+import ProjectDetailScreen from "./ProjectDetail"
+import QuestionDetailScreen from "./QuestionDetail"
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -57,6 +59,26 @@ const ProfileStack = createStackNavigator({
                 backgroundColor: '#00BCD4',
             }
         }
+    },
+    ProfileDetailView: {
+      screen: ProjectDetailScreen,
+      navigationOptions: {
+          title: 'Details',
+          headerTintColor: 'white',
+          headerStyle: {
+              backgroundColor: '#00BCD4',
+          }
+      }
+    },
+    QuestionDetailView: {
+      screen: QuestionDetailScreen,
+      navigationOptions: {
+          title: 'Comments',
+          headerTintColor: 'white',
+          headerStyle: {
+              backgroundColor: '#00BCD4',
+          }
+      }
     }
 });
 
@@ -95,6 +117,17 @@ MessagingStack.navigationOptions = ({navigation}) => {
 };
 
 CollabStack.navigationOptions = ({navigation}) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 0) {
+        tabBarVisible = false;
+    }
+
+    return {
+        tabBarVisible,
+    };
+};
+
+ProfileStack.navigationOptions = ({navigation}) => {
     let tabBarVisible = true;
     if (navigation.state.index > 0) {
         tabBarVisible = false;

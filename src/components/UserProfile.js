@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
-import {Text, View, StyleSheet, ScrollView, KeyboardAvoidingView} from 'react-native'
+import {Text, View, StyleSheet, ScrollView, Keyboard} from 'react-native'
 import {Input, Button} from 'react-native-elements'
+import {Header} from 'react-navigation'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import FirebaseSVC from "./FirebaseSVC";
 import ValidatorTextField from './ValidatorTextField'
@@ -12,7 +14,8 @@ export default class UserProfile extends Component {
   state = {
         user: {},
         editingEnabled: false,
-        label: 'Edit Profile'
+        label: 'Edit Profile',
+        height: 0
     };
 
   async componentDidMount() {
@@ -25,7 +28,6 @@ export default class UserProfile extends Component {
 
   toogleProfileEdit() {
     if (this.state.editingEnabled) {
-
       const titleError = validate('title', this.state.user.title);
       const affiliationError = validate('affiliation', this.state.user.affiliation);
       const locationError = validate('location', this.state.user.location);
@@ -73,8 +75,7 @@ export default class UserProfile extends Component {
 
   render() {
     return (
-      <KeyboardAvoidingView behavior="padding" enabled keyboardVerticalOffset={40}>
-      <ScrollView style={styles.profileDataContainer}>
+      <KeyboardAwareScrollView>
         <ValidatorTextField
               placeholder='Title'
               value={this.state.user.title}
@@ -173,7 +174,7 @@ export default class UserProfile extends Component {
               }
               error={this.state.keywordsError}
           />
-          <ValidatorTextField
+          <Input
               placeholder='Bio'
               value={this.state.user.bio}
               editable={this.state.editingEnabled}
@@ -186,7 +187,17 @@ export default class UserProfile extends Component {
                   }
                 }))
               }
+              inputContainerStyle={{borderWidth: 0.5, borderColor: '#BDBDBD', borderRadius: 10, backgroundColor: 'white'}}
+              inputStyle={{color: 'black', fontSize: 14, height: Math.max(50, this.state.height), marginLeft: 8, marginRight: 8, marginTop: 4, marginBottom: 4}}
+              autoCompleteType='off'
+              onContentSizeChange={(event) => {
+                  this.setState({ height: event.nativeEvent.contentSize.height + 4 })
+              }}
+              containerStyle={{alignItems: 'center', justifyContent: 'center', margin: 4}}
               error={this.state.bioError}
+              blurOnSubmit={true}
+              returnKeyType={"done"}
+              onSubmitEditing={()=>{Keyboard.dismiss()}}
           />
         <View>
           <Button
@@ -198,8 +209,7 @@ export default class UserProfile extends Component {
           />
         </View>
 
-      </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     )
   }
 

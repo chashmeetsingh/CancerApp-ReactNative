@@ -49,9 +49,9 @@ export default class ProfileScreen extends Component {
     case '1':
       return <UserProfile />;
     case '2':
-      return <Projects />;
+      return <Projects navigation={this.props.navigation} />;
     case '3':
-      return <Questions />;
+      return <Questions navigation={this.props.navigation} />;
     case '4':
       return <Ideas />;
     default:
@@ -61,7 +61,7 @@ export default class ProfileScreen extends Component {
 
   render() {
     return (
-      <ScrollView behavior="padding" enabled keyboardVerticalOffset={40} style={styles.container}>
+      <View style={styles.container}>
           <View style={styles.imageContainer}>
               <Image
                   style={styles.profileImage}
@@ -80,8 +80,7 @@ export default class ProfileScreen extends Component {
             renderTabBar={this.renderTabBar}
             onIndexChange={this.handleIndexChange}
           />
-      </ScrollView>
-
+      </View>
     );
   }
 

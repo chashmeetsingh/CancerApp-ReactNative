@@ -51,7 +51,8 @@ export default class Projects extends Component {
   cancelButtonTapped() {
     this.setState({
       isDialogVisible: false,
-      projectURL: ''
+      projectURL: '',
+      urlError: null
     })
   }
 
@@ -89,7 +90,7 @@ export default class Projects extends Component {
         />
         <FlatList
           data={this.state.projectList}
-          renderItem={({item}) => <ProjectItem data={item} />}
+          renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
           keyExtractor={(item) => item.key}
         />
         <Dialog.Container visible={this.state.isDialogVisible}>
