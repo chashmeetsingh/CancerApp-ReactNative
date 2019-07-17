@@ -2,9 +2,6 @@ import React, {Component} from 'react'
 import {Dimensions, StyleSheet, TouchableOpacity} from 'react-native'
 import {Text} from 'react-native-elements'
 
-import * as firebase from 'firebase';
-import FirebaseSVC from "./FirebaseSVC";
-
 export default class CollabItem extends Component {
 
     state = {
@@ -13,7 +10,7 @@ export default class CollabItem extends Component {
     };
 
     handleItemPress = () => {
-      this.props.navigation.navigate('DiscussionView', {collab: this.props.item});
+        this.props.navigation.navigate('DiscussionView', {collab: this.props.item});
     }
 
     componentDidMount() {

@@ -1,42 +1,40 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import {Button, Text} from 'react-native-elements'
 
-import * as firebase from 'firebase';
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 
 export default class MatchItem extends Component {
 
-    currentUser = firebase.auth().currentUser;
+    currentUser = Firebase.shared().currentUser;
 
     collaborateButtonPressed = () => {
-      const mid1 = this.currentUser.uid + ',' + this.props.user.uid
-      const mid2 = this.props.user.uid + ',' + this.currentUser.uid
+        const mid1 = this.currentUser.uid + ',' + this.props.user.uid
+        const mid2 = this.props.user.uid + ',' + this.currentUser.uid
 
-      firebase.database().ref('/messages/' + mid1).once('value', snapshot => {
-        if (snapshot.val() !== null) {
-          FirebaseSVC.shared().setPropsData({mid: mid1, user: this.props.user});
-          this.props.navigation.navigate('Messaging');
-        } else {
-          firebase.database().ref('/messages/' + mid2).once('value', snapshot => {
-            if (snapshot.val() !== null) {
-              FirebaseSVC.shared().setPropsData({mid: mid2, user: this.props.user});
-              this.props.navigation.navigate('Messaging');
-            } else {
-              FirebaseSVC.shared().setPropsData({mid: mid2, user: this.props.user});
-              firebase.database().ref('/messages/' + mid2).set({
-                createdAt: Date.now(),
-                list: [],
-                user: FirebaseSVC.shared().currentUser.uid,
-                status: 'waiting'
-              })
-              this.props.navigation.navigate('Messaging');
-            }
-          })
-        }
-      })
+        Firebase.shared().getMessage(mid1).get().then(doc => {
+          if (doc.exists) {
+            this.props.navigation.navigate('Messaging');
+          } else {
+            Firebase.shared().getMessage(mid2).get().then(doc => {
+              if (doc.exists) {
+                this.props.navigation.navigate('Messaging');
+              } else {
+                Firebase.shared().getMessage(mid1).set({
+                  createdAt: Date.now(),
+                  createdBy: this.currentUser.uid,
+                  member: this.props.user.uid,
+                  status: 'waiting',
+                  updatedAt: Date.now()
+                }).then(() => {
+                  this.props.navigation.navigate('Messaging');
+                })
+              }
+            })
+          }
+        })
     };
 
     unfavoriteButtonTapped = () => {
@@ -51,7 +49,7 @@ export default class MatchItem extends Component {
     };
 
     itemTapped() {
-
+      this.props.navigation.navigate('UserProfileView', {user: this.props.user})
     }
 
     render() {
@@ -104,7 +102,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 0.5},
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 1,
     },
     innerContainer: {

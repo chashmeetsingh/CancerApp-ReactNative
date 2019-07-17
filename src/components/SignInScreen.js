@@ -9,112 +9,165 @@ import CompleteDetails from "./CompleteDetails";
 
 import {Google} from "expo"
 
+import Firebase from "./FirebaseSVC";
+import { StackActions, NavigationActions } from 'react-navigation';
+
 export default class SignInScreen extends Component {
 
     static navigationOptions = {
         header: null
     };
 
-    // Initialize Firebase
-    firebaseConfig = {
-        apiKey: "AIzaSyDsQmbvCJGpmrxHiCHrVUmuNchXiU8qdRQ",
-        authDomain: "windsorcancerresearch.firebaseapp.com",
-        databaseURL: "https://windsorcancerresearch.firebaseio.com",
-        projectId: "windsorcancerresearch",
-        storageBucket: "windsorcancerresearch.appspot.com",
-        messagingSenderId: "111862271681",
-        appId: "1:111862271681:web:30cfc6f896b01871"
+    // // Initialize Firebase
+    // firebaseConfig = {
+    //     apiKey: "AIzaSyDsQmbvCJGpmrxHiCHrVUmuNchXiU8qdRQ",
+    //     authDomain: "windsorcancerresearch.firebaseapp.com",
+    //     databaseURL: "https://windsorcancerresearch.firebaseio.com",
+    //     projectId: "windsorcancerresearch",
+    //     storageBucket: "windsorcancerresearch.appspot.com",
+    //     messagingSenderId: "111862271681",
+    //     appId: "1:111862271681:web:30cfc6f896b01871"
+    // };
+
+    state = {
+      user: {
+        title: "",
+        affiliation: "",
+        location: "",
+        experience: "",
+        research_fields: "",
+        website_link: "",
+        keywords: "",
+        bio: "",
+      }
     };
+
+    componentDidMount(){
+      this.mounted = true
+
+      // Listen for authentication state change
+      this.mounted && Firebase.shared().auth.onAuthStateChanged((user) => {
+        if (user != null) {
+          console.log("Authentication success!");
+          this.completeSignIn(user);
+        }
+      })
+    }
+
+    componentWillUnmount(){
+      this.mounted = false
+    }
+
+    completeSignIn(user) {
+      this.mounted && Firebase.shared().getCurrentUser();
+
+      this.mounted && Firebase.shared().user(user.uid).get().then(doc => {
+        if (doc.exists) {
+          this.setState({
+            user: doc.data()
+          }, () => {
+            for (var key in this.state.user) {
+              if (this.state.user[key] === "") {
+                this.completeDetails();
+                return;
+              }
+            }
+            this.openHomeView()
+          });
+        } else {
+          console.log('User doesn\'t exist');
+          this.mounted && Firebase.shared().user(user.uid).set({
+            title: this.state.user.title,
+            affiliation: this.state.user.affiliation,
+            location: this.state.user.location,
+            experience: this.state.user.experience,
+            research_fields: this.state.user.research_fields,
+            website_link: this.state.user.website_link,
+            keywords: this.state.user.keywords,
+            bio: this.state.user.bio,
+            uid: user.uid,
+            name: user.displayName,
+            photoURL: user.photoURL.replace("s96-c", "s256-c") + '?width=300&height=300'
+          }, {
+            merge: true
+          }).then(() => {
+            this.openHomeView()
+          })
+        }
+      })
+    }
+
+    openHomeView() {
+      const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'BottomTabNavigator' })],
+      });
+      this.props.navigation.dispatch(resetAction);
+    }
 
     constructor(props) {
         super(props);
 
-        firebase.initializeApp(this.firebaseConfig);
-
-        // Listen for authentication state to change.
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user != null) {
-                console.log("We are authenticated now!");
-
-                firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
-                    if (snapshot.val() !== null) {
-                        for (var key in snapshot.val()) {
-                            if (snapshot.val()[key] === "") {
-                                this.completeDetails(snapshot.val());
-                                return;
-                            }
-                        }
-                        this.props.navigation.navigate('BottomTabNavigator');
-                    } else {
-                        const defaultUserProfileValues = {
-                          title: "",
-                          affiliation: "",
-                          location: "",
-                          experience: "",
-                          research_fields: "",
-                          website_link: "",
-                          keywords: "",
-                          bio: "",
-                          uid: user.uid,
-                          name: user.displayName
-                        };
-                        firebase.database().ref('/users/' + user.uid).set(defaultUserProfileValues).then(() => {
-                            this.completeDetails(defaultUserProfileValues);
-                        });
-                    }
-                })
-            }
-
-            // Do other things
-        });
+        // firebase.initializeApp(this.firebaseConfig);
+        //
+        // // Listen for authentication state to change.
+        // firebase.auth().onAuthStateChanged((user) => {
+        //     if (user != null) {
+        //         console.log("We are authenticated now!");
+        //
+        //         firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
+        //             if (snapshot.val() !== null) {
+        //                 for (var key in snapshot.val()) {
+        //                     if (snapshot.val()[key] === "") {
+        //                         this.completeDetails(snapshot.val());
+        //                         return;
+        //                     }
+        //                 }
+        //                 this.props.navigation.navigate('BottomTabNavigator');
+        //             } else {
+        //                 const defaultUserProfileValues = {
+                            // title: "",
+                            // affiliation: "",
+                            // location: "",
+                            // experience: "",
+                            // research_fields: "",
+                            // website_link: "",
+                            // keywords: "",
+                            // bio: "",
+                            // uid: user.uid,
+                            // name: user.displayName
+        //                 };
+        //                 firebase.database().ref('/users/' + user.uid).set(defaultUserProfileValues).then(() => {
+        //                     this.completeDetails(defaultUserProfileValues);
+        //                 });
+        //             }
+        //         })
+        //     }
+        //
+        //     // Do other things
+        // });
     }
 
-    completeDetails = (profileData) => {
-        const {navigate} = this.props.navigation;
-        navigate('CompleteDetails', {profileData: profileData})
+    completeDetails = () => {
+        this.props.navigation.navigate('CompleteDetails')
     };
 
     async loginWithFacebook() {
-        const { type, token } = await Facebook.logInWithReadPermissionsAsync(
+        const { type, token } = this.mounted && await Facebook.logInWithReadPermissionsAsync(
             '368591937197975',
             { permissions: ['public_profile'] }
         );
 
         if (type === 'success') {
             // Build Firebase credential with the Facebook access token.
-            const credential = firebase.auth.FacebookAuthProvider.credential(token);
+            const credential = this.mounted && firebase.auth.FacebookAuthProvider.credential(token);
 
             // Sign in with credential from the Facebook userList.
-            firebase
+            this.mounted && firebase
                 .auth()
                 .signInWithCredential(credential)
                 .then((result) => {
-                    firebase.database().ref('/users/' + result.user.uid).once('value').then((snapshot) => {
-                        if (snapshot.val()) {
-                            for (var key in snapshot.val()) {
-                                if (snapshot.val()[key] === "") {
-                                    this.completeDetails(snapshot.val());
-                                    return;
-                                }
-                            }
-                        } else {
-                            const defaultUserProfileValues = {
-                                title: "",
-                                affiliation: "",
-                                location: "",
-                                experience: "",
-                                research_fields: "",
-                                website_link: "",
-                                keywords: "",
-                                bio: "",
-                                uid: result.user.uid,
-                                name: result.user.displayName
-                            };
-                            firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
-                                this.completeDetails(defaultUserProfileValues);
-                            });
-                        }
-                    })
+                  this.completeSignIn(result.user);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -123,59 +176,27 @@ export default class SignInScreen extends Component {
     }
 
     async loginWithGoogle() {
-      try {
-        const result = await Google.logInAsync({
+      const result = this.mounted && await Google.logInAsync({
           // androidClientId: "YOUR_CLIENT_ID_HERE",
           iosClientId: '111862271681-pkg69pfass94hr0lbhmcg25lua4277uc.apps.googleusercontent.com',
           scopes: ["profile", "email"],
           // behavior: 'web'
-        })
+      })
 
-        if (result.type === "success") {
+      if (result.type === "success") {
           // Build Firebase credential with the Facebook access token.
-          const credential = firebase.auth.GoogleAuthProvider.credential(result.idToken, result.accessToken);
+          const credential = this.mounted && firebase.auth.GoogleAuthProvider.credential(result.idToken, result.accessToken);
 
           // Sign in with credential from the Facebook userList.
-          firebase
+          this.mounted && firebase
               .auth()
               .signInWithCredential(credential)
               .then((result) => {
-                  firebase.database().ref('/users/' + result.user.uid).once('value').then((snapshot) => {
-                      if (snapshot.val() !== null) {
-                          for (var key in snapshot.val()) {
-                              if (snapshot.val()[key] === "") {
-                                  this.completeDetails(snapshot.val());
-                                  return;
-                              }
-                          }
-                      } else {
-                          const defaultUserProfileValues = {
-                              title: "",
-                              affiliation: "",
-                              location: "",
-                              experience: "",
-                              research_fields: "",
-                              website_link: "",
-                              keywords: "",
-                              bio: "",
-                              uid: result.user.uid,
-                              name: result.user.displayName
-                          };
-                          console.log(defaultUserProfileValues, result);
-                          firebase.database().ref('/users/' + result.user.uid).set(defaultUserProfileValues).then(() => {
-                              this.completeDetails(defaultUserProfileValues);
-                          });
-                      }
-                  })
+                this.completeSignIn(result.user);
               })
               .catch((error) => {
                   console.log(error);
               });
-        } else {
-          console.log("cancelled")
-        }
-      } catch (e) {
-        console.log("error", e)
       }
     }
 

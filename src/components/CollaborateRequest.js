@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Button} from 'react-native-elements'
-import {View, Text, StyleSheet} from 'react-native'
+import {StyleSheet, Text, View} from 'react-native'
 import * as firebase from 'firebase';
 
 export default class CollaborateRequest extends Component {
@@ -23,23 +23,23 @@ export default class CollaborateRequest extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={{textAlign: 'center'}}>Chashmeet has sent you a request to collaborate</Text>
-        <View style={{flexDirection: 'row'}}>
-          <Button
-              title='Accept'
-              buttonStyle={{backgroundColor: '#25d366', borderRadius: 16, margin: 6}}
-              titleStyle={{color: 'white'}}
-              onPress={() => this.acceptRequestButtonTapped()}
-          />
-          <Button
-              title='Reject'
-              buttonStyle={{backgroundColor: 'red', borderRadius: 16, margin: 6}}
-              titleStyle={{color: 'white'}}
-              onPress={() => this.rejectRequestButtonTapped()}
-          />
+        <View style={styles.container}>
+          <Text style={{textAlign: 'center'}}>Chashmeet has sent you a request to collaborate</Text>
+          <View style={{flexDirection: 'row'}}>
+            <Button
+                title='Accept'
+                buttonStyle={{backgroundColor: '#25d366', borderRadius: 16, margin: 6}}
+                titleStyle={{color: 'white'}}
+                onPress={() => this.acceptRequestButtonTapped()}
+            />
+            <Button
+                title='Reject'
+                buttonStyle={{backgroundColor: 'red', borderRadius: 16, margin: 6}}
+                titleStyle={{color: 'white'}}
+                onPress={() => this.rejectRequestButtonTapped()}
+            />
+          </View>
         </View>
-      </View>
     )
   }
 

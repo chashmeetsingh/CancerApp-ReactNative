@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {ImageBackground, ScrollView, Text, View, FlatList, TouchableOpacity, Button, StyleSheet} from 'react-native'
+import {ImageBackground, ScrollView, StyleSheet, Text, View} from 'react-native'
 
 import BulletinBoardImage from '../../assets/bulletin-board.jpg'
 import CollabItem from "./CollabItem";
@@ -17,21 +17,26 @@ export default class CollabBoardScreen extends Component {
     return {
       // title: navigation.state.params.title,
       headerRight: <FontAwesomeIcon
-                    name="plus"
-                    style={{color: 'white', paddingRight: 14}}
-                    size={22}
-                    onPress={() => params.dialog(true)}
-                />
+          name="plus"
+          style={{color: 'white', paddingRight: 14}}
+          size={22}
+          onPress={() => params.dialog(true)}
+      />
 
     };
   };
 
   componentDidMount() {
+    this.mounted = true
     this.props.navigation.setParams({
       dialog: this.showDialog
     });
 
     this.getCollabs()
+  }
+
+  componentWillUnmount(){
+    this.mounted = false
   }
 
   state = {
@@ -54,7 +59,7 @@ export default class CollabBoardScreen extends Component {
         id: FirebaseSVC.shared().currentUser.uid
       }
     };
-    firebase.database().ref('/collabs').orderByChild('name').equalTo(data.name).once('value', snapshot => {
+    this.mounted && firebase.database().ref('/collabs').orderByChild('name').equalTo(data.name).once('value', snapshot => {
       if (snapshot.val() === null) {
         firebase.database().ref('/collabs').push(data);
       }
@@ -63,7 +68,7 @@ export default class CollabBoardScreen extends Component {
   }
 
   getCollabs = () => {
-    firebase.database().ref('/collabs').on('value', snapshot => {
+    this.mounted && firebase.database().ref('/collabs').once('value', snapshot => {
       var collabs = [];
       for (var key in snapshot.val()) {
         var collab = snapshot.val()[key];
@@ -73,17 +78,17 @@ export default class CollabBoardScreen extends Component {
 
       this.setState({
         collabs: collabs.sort((a, b) =>
-          Object.values(a.messages !== undefined ? a.messages : []).length < Object.values(b.messages !== undefined ? b.messages : []).length
-        ).slice(0, 8)
+            Object.values(a.messages !== undefined ? a.messages : []).length < Object.values(b.messages !== undefined ? b.messages : []).length
+        ).slice(0, 5)
       })
     })
   }
 
   render() {
     return (
-      <ImageBackground style={{width: '100%', height: '100%'}} source={BulletinBoardImage}>
-        <ScrollView style={{flex: 1}}>
-          <View style={{
+        <ImageBackground style={{width: '100%', height: '100%'}} source={BulletinBoardImage}>
+          <ScrollView style={{flex: 1}}>
+            <View style={{
               flexWrap: 'wrap',
               flex: 1,
               flexDirection: 'row',
@@ -91,41 +96,41 @@ export default class CollabBoardScreen extends Component {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-            {
-              this.state.collabs.map((item, index) => {
-                return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
-              })
-            }
-          </View>
-          <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold', color: 'white'}}>Past Week</Text>
-        <View style={{
-            flexWrap: 'wrap',
-            flex: 1,
-            flexDirection: 'row',
-            padding: 2,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-          {
-            this.state.collabs.map((item, index) => {
-              return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
-            })
-          }
-        </View>
-      </ScrollView>
-      <Dialog.Container visible={this.state.isDialogVisible}>
-        <Dialog.Title>Add a new topic</Dialog.Title>
-        {/* <Dialog.Description>
+              {
+                this.state.collabs.map((item, index) => {
+                  return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
+                })
+              }
+            </View>
+            <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold', color: 'white'}}>Past Week</Text>
+            <View style={{
+              flexWrap: 'wrap',
+              flex: 1,
+              flexDirection: 'row',
+              padding: 2,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {
+                this.state.collabs.map((item, index) => {
+                  return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
+                })
+              }
+            </View>
+          </ScrollView>
+          <Dialog.Container visible={this.state.isDialogVisible}>
+            <Dialog.Title>Add a new topic</Dialog.Title>
+            {/* <Dialog.Description>
           Do you want to delete this account? You cannot undo this action.
         </Dialog.Description> */}
-        <Dialog.Input onChangeText={(text) => this.setState({topic: text})}></Dialog.Input>
-        <Dialog.Button label="Cancel" onPress={() => this.showDialog(false)} />
-      <Dialog.Button label="Add" onPress={() => this.handleAddCollab()} />
-      </Dialog.Container>
+            <Dialog.Input onChangeText={(text) => this.setState({topic: text})}></Dialog.Input>
+            <Dialog.Button label="Cancel" onPress={() => this.showDialog(false)} />
+            <Dialog.Button label="Add" onPress={() => this.handleAddCollab()} />
+          </Dialog.Container>
 
-    </ImageBackground>
-);
-}
+        </ImageBackground>
+    );
+  }
 
 }
 

@@ -1,14 +1,8 @@
-/* eslint-disable no-underscore-dangle, no-use-before-define */
-
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  View,
-  ViewPropTypes,
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet, View, ViewPropTypes,} from 'react-native';
 
-import { Avatar, Day, utils } from 'react-native-gifted-chat';
+import {Avatar, Day, utils} from 'react-native-gifted-chat';
 import Bubble from './SlackBubble';
 
 const { isSameUser, isSameDay } = utils;
@@ -47,8 +41,8 @@ export default class Message extends React.Component {
   renderAvatar() {
     let extraStyle;
     if (
-      isSameUser(this.props.currentMessage, this.props.previousMessage)
-      && isSameDay(this.props.currentMessage, this.props.previousMessage)
+        isSameUser(this.props.currentMessage, this.props.previousMessage)
+        && isSameDay(this.props.currentMessage, this.props.previousMessage)
     ) {
       // Set the invisible avatar height to 0, but keep the width, padding, etc.
       extraStyle = { height: 0 };
@@ -56,10 +50,10 @@ export default class Message extends React.Component {
 
     const avatarProps = this.getInnerComponentProps();
     return (
-      <Avatar
-        {...avatarProps}
-        imageStyle={{ left: {...styles.slackAvatar, ...avatarProps.imageStyle, ...extraStyle} }}
-      />
+        <Avatar
+            {...avatarProps}
+            imageStyle={{ left: {...styles.slackAvatar, ...avatarProps.imageStyle, ...extraStyle} }}
+        />
     );
   }
 
@@ -67,19 +61,19 @@ export default class Message extends React.Component {
     const marginBottom = isSameUser(this.props.currentMessage, this.props.nextMessage) ? 2 : 10;
 
     return (
-      <View>
-        {this.renderDay()}
-        <View
-          style={[
-            styles.container,
-            { marginBottom },
-            this.props.containerStyle,
-          ]}
-        >
-          {this.renderAvatar()}
-          {this.renderBubble()}
+        <View>
+          {this.renderDay()}
+          <View
+              style={[
+                styles.container,
+                { marginBottom },
+                this.props.containerStyle,
+              ]}
+          >
+            {this.renderAvatar()}
+            {this.renderBubble()}
+          </View>
         </View>
-      </View>
     );
   }
 

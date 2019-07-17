@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import {Text, ScrollView, StyleSheet, FlatList} from 'react-native'
+import {FlatList, ScrollView, StyleSheet} from 'react-native'
 import {Button} from 'react-native-elements'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 import Dialog from "react-native-dialog";
 import * as firebase from 'firebase';
 import ProjectItem from './ProjectItem'
@@ -13,12 +13,18 @@ export default class Projects extends Component {
   state = {
     projectURL: '',
     isDialogVisible: false,
-    projectList: []
+    projectList: [],
+    user: {
+      uid: ''
+    }
   }
 
-  componentDidMount() {
-    this.currentUser = FirebaseSVC.shared().currentUser;
-    this.getProjectList()
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      user: nextProps.user !== undefined ? nextProps.user : Firebase.shared().currentUser
+    }, () => {
+      this.getProjectList();
+    });
   }
 
   addProjectButtonPressed() {
@@ -36,10 +42,18 @@ export default class Projects extends Component {
       return
     }
 
-    firebase.database().ref('/users/' + this.currentUser.uid + '/projects').push({
-      url: this.state.projectURL
+    Firebase.shared().projects().add({
+      url: this.state.projectURL,
+      createdAt: Date.now(),
+      uid: this.state.user.uid
+    }).then(() => {
+      this.cancelButtonTapped()
     })
-    this.cancelButtonTapped()
+
+    // firebase.database().ref('/users/' + this.currentUser.uid + '/projects').push({
+    //   url: this.state.projectURL
+    // });
+    // this.cancelButtonTapped()
   }
 
   showDialog = (show) => {
@@ -57,56 +71,57 @@ export default class Projects extends Component {
   }
 
   getProjectList() {
-    firebase.database().ref('/users/' + this.currentUser.uid + '/projects').on('value', snapshot => {
-      if (snapshot.val() !== null) {
-        var projectURLs = [];
-        for (var id in snapshot.val()) {
-          var url = snapshot.val()[id];
-          url['key'] = id;
-            projectURLs.push(url);
-        }
-        this.setState({
-          projectList: projectURLs.reverse()
-        })
+    Firebase.shared().projects().where("uid", "==", this.state.user.uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+      this.setState({projectList: []});
+      for (var doc in snapshot.docs) {
+        let data = snapshot.docs[doc].data();
+        data['key'] = snapshot.docs[doc].id;
+        this.setState(prevState => ({
+          projectList: [...prevState.projectList, data]
+        }));
       }
     })
   }
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <Button
-            icon={
-              <FontAwesomeIcon
-                name="plus"
-                size={17}
-                color="white"
-              />
-            }
-            title='Add Project'
-            buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, margin: 8}}
-            titleStyle={{color: 'white', marginLeft: 10}}
-            onPress={() => this.addProjectButtonPressed()}
-        />
-        <FlatList
-          data={this.state.projectList}
-          renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
-          keyExtractor={(item) => item.key}
-        />
-        <Dialog.Container visible={this.state.isDialogVisible}>
-          <Dialog.Title>Add project url</Dialog.Title>
-          <Dialog.Input value={this.state.projectURL} onChangeText={(text) => this.setState({projectURL: text.toLowerCase()})}></Dialog.Input>
+        <ScrollView style={styles.container}>
           {
-            this.state.urlError
-            ? <Dialog.Description>
-              Invalid URL
-            </Dialog.Description>
+            this.state.user.uid === Firebase.shared().currentUser.uid
+            ? <Button
+                icon={
+                  <FontAwesomeIcon
+                      name="plus"
+                      size={17}
+                      color="white"
+                  />
+                }
+                title='Add Project'
+                buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, margin: 8}}
+                titleStyle={{color: 'white', marginLeft: 10}}
+                onPress={() => this.addProjectButtonPressed()}
+            />
             : null
           }
-          <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
-        <Dialog.Button label="Add" onPress={() => this.addButtonTapped()} />
-        </Dialog.Container>
-      </ScrollView>
+          <FlatList
+              data={this.state.projectList}
+              renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
+              keyExtractor={(item) => item.key}
+          />
+          <Dialog.Container visible={this.state.isDialogVisible}>
+            <Dialog.Title>Add project url</Dialog.Title>
+            <Dialog.Input value={this.state.projectURL} onChangeText={(text) => this.setState({projectURL: text.toLowerCase()})}></Dialog.Input>
+            {
+              this.state.urlError
+                  ? <Dialog.Description>
+                    Invalid URL
+                  </Dialog.Description>
+                  : null
+            }
+            <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
+            <Dialog.Button label="Add" onPress={() => this.addButtonTapped()} />
+          </Dialog.Container>
+        </ScrollView>
     )
   }
 

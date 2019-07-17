@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
-import {View, Text, StyleSheet} from 'react-native'
+import {StyleSheet, Text, View} from 'react-native'
 
 export default class IdeaItem extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text>{this.props.data.idea}</Text>
-      </View>
+        <View style={styles.container}>
+          <Text>{this.props.data.idea}</Text>
+        </View>
     )
   }
 

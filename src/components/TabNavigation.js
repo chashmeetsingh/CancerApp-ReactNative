@@ -14,6 +14,7 @@ import FavoritesScreen from "./FavoritesScreen";
 import DiscussionScreen from "./DiscussionScreen"
 import ProjectDetailScreen from "./ProjectDetail"
 import QuestionDetailScreen from "./QuestionDetail"
+import SignInScreen from './SignInScreen'
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -25,7 +26,36 @@ const MatchesStack = createStackNavigator({
                 backgroundColor: '#00BCD4',
             },
         }
-    }
+    },
+    UserProfileView: {
+      screen: ProfileScreen,
+      navigationOptions: {
+          headerTintColor: 'white',
+          headerStyle: {
+              backgroundColor: '#00BCD4',
+          }
+      }
+    },
+    UserProfileQuestionDetailView: {
+        screen: QuestionDetailScreen,
+        navigationOptions: {
+            title: 'Comments',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
+    UserProfileProjectDetailView: {
+        screen: ProjectDetailScreen,
+        navigationOptions: {
+            title: 'Discussion',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
 });
 
 const MessagingStack = createStackNavigator({
@@ -61,24 +91,24 @@ const ProfileStack = createStackNavigator({
         }
     },
     ProfileDetailView: {
-      screen: ProjectDetailScreen,
-      navigationOptions: {
-          title: 'Details',
-          headerTintColor: 'white',
-          headerStyle: {
-              backgroundColor: '#00BCD4',
-          }
-      }
+        screen: ProjectDetailScreen,
+        navigationOptions: {
+            title: 'Discussion',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
     },
     QuestionDetailView: {
-      screen: QuestionDetailScreen,
-      navigationOptions: {
-          title: 'Comments',
-          headerTintColor: 'white',
-          headerStyle: {
-              backgroundColor: '#00BCD4',
-          }
-      }
+        screen: QuestionDetailScreen,
+        navigationOptions: {
+            title: 'Comments',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
     }
 });
 
@@ -94,16 +124,27 @@ const CollabStack = createStackNavigator({
         }
     },
     DiscussionView: {
-      screen: DiscussionScreen,
-      navigationOptions: {
-          title: 'Discussion',
-          headerTintColor: 'white',
-          headerStyle: {
-              backgroundColor: '#00BCD4',
-          }
-      }
+        screen: DiscussionScreen,
+        navigationOptions: {
+            title: 'Discussion',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
     }
 });
+
+MatchesStack.navigationOptions = ({navigation}) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 0) {
+        tabBarVisible = false;
+    }
+
+    return {
+        tabBarVisible,
+    };
+};
 
 MessagingStack.navigationOptions = ({navigation}) => {
     let tabBarVisible = true;
@@ -150,6 +191,12 @@ const SavesStack = createStackNavigator({
         }
     }
 });
+
+const SignIn = createStackNavigator({
+  SignInView: {
+    screen: SignInScreen
+  }
+})
 
 const BottomTabNavigator = createBottomTabNavigator({
     Matches: {

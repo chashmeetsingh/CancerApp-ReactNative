@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import {View, Text, StyleSheet, FlatList} from 'react-native'
+import {FlatList, StyleSheet, View} from 'react-native'
 import {Button} from 'react-native-elements'
 import IdeaItem from './IdeaItem'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 import * as firebase from 'firebase';
 import Dialog from "react-native-dialog";
 import validate from './Validator'
@@ -14,25 +14,36 @@ export default class Ideas extends Component {
     ideaList: [],
     idea: '',
     isDialogVisible: false,
+    user: {
+      uid: ''
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      user: nextProps.user !== undefined ? nextProps.user : Firebase.shared().currentUser
+    }, () => {
+      this.getIdeas()
+    });
   }
 
   componentDidMount() {
-    this.currentUser = FirebaseSVC.shared().currentUser;
-    this.getIdeas();
+    this.mounted = true
+  }
+
+  componentWillUnmount(){
+    this.mounted = false
   }
 
   getIdeas() {
-    firebase.database().ref('/users/' + this.currentUser.uid + '/ideas').on('value', snapshot => {
-      if (snapshot.val() !== null) {
-        var ideas = [];
-        for (var id in snapshot.val()) {
-          var idea = snapshot.val()[id];
-          idea['key'] = id;
-            ideas.push(idea);
-        }
-        this.setState({
-          ideaList: ideas.reverse()
-        })
+    this.mounted && Firebase.shared().ideas().where("uid", "==", this.state.user.uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+      this.setState({ideaList: []});
+      for (var doc in snapshot.docs) {
+        let data = snapshot.docs[doc].data();
+        data['key'] = snapshot.docs[doc].id;
+        this.setState(prevState => ({
+          ideaList: [...prevState.ideaList, data]
+        }));
       }
     })
   }
@@ -54,8 +65,10 @@ export default class Ideas extends Component {
       return;
     }
 
-    firebase.database().ref('/users/' + this.currentUser.uid + '/ideas').push({
-      idea: this.state.idea
+    Firebase.shared().ideas().add({
+      idea: this.state.idea,
+      createdAt: Date.now(),
+      uid: this.state.user.uid
     }).then(() => {
       this.cancelButtonTapped()
     })
@@ -76,38 +89,42 @@ export default class Ideas extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Button
-            icon={
-              <FontAwesomeIcon
-                name="plus"
-                size={17}
-                color="white"
-              />
-            }
-            title='Add Idea'
-            buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, margin: 8}}
-            titleStyle={{color: 'white', marginLeft: 10}}
-            onPress={() => this.addIdeaButtonPressed()}
-        />
-        <FlatList
-          data={this.state.ideaList}
-          renderItem={({item}) => <IdeaItem data={item} />}
-        />
-        <Dialog.Container visible={this.state.isDialogVisible}>
-          <Dialog.Title>Add an idea</Dialog.Title>
-          <Dialog.Input value={this.state.idea} onChangeText={(text) => this.setState({idea: text})}></Dialog.Input>
+        <View style={styles.container}>
+          {
+            this.state.user.uid === Firebase.shared().currentUser.uid
+            ? <Button
+                icon={
+                  <FontAwesomeIcon
+                      name="plus"
+                      size={17}
+                      color="white"
+                  />
+                }
+                title='Add Idea'
+                buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10, margin: 8}}
+                titleStyle={{color: 'white', marginLeft: 10}}
+                onPress={() => this.addIdeaButtonPressed()}
+            />
+            : null
+          }
+          <FlatList
+              data={this.state.ideaList}
+              renderItem={({item}) => <IdeaItem data={item} />}
+          />
+          <Dialog.Container visible={this.state.isDialogVisible}>
+            <Dialog.Title>Add an idea</Dialog.Title>
+            <Dialog.Input value={this.state.idea} onChangeText={(text) => this.setState({idea: text})}></Dialog.Input>
             {
               this.state.ideaError
-              ? <Dialog.Description>
-                Please enter an idea.
-              </Dialog.Description>
-              : null
+                  ? <Dialog.Description>
+                    Please enter an idea.
+                  </Dialog.Description>
+                  : null
             }
-          <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
-        <Dialog.Button label="Add" onPress={() => this.addButtonPressed()} />
-        </Dialog.Container>
-      </View>
+            <Dialog.Button label="Cancel" onPress={() => this.cancelButtonTapped()} />
+            <Dialog.Button label="Add" onPress={() => this.addButtonPressed()} />
+          </Dialog.Container>
+        </View>
     )
   }
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {TouchableOpacity, Text, StyleSheet} from 'react-native'
+import {StyleSheet, Text, TouchableOpacity} from 'react-native'
 
 export default class QuestionItem extends Component {
 
@@ -9,9 +9,9 @@ export default class QuestionItem extends Component {
 
   render() {
     return (
-      <TouchableOpacity style={styles.container} onPress={() => this.handleItemPressed()}>
-        <Text>{this.props.data.question}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.container} onPress={() => this.handleItemPressed()}>
+          <Text>{this.props.data.question}</Text>
+        </TouchableOpacity>
     )
   }
 
