@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, StyleSheet, View, Text} from 'react-native'
 import {Button} from 'react-native-elements'
 import QuestionItem from './QuestionItem'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
@@ -60,7 +60,7 @@ export default class Question extends Component {
     Firebase.shared().questions().add({
       question: this.state.question,
       createdAt: Date.now(),
-      uid: this.currentUser.uid
+      uid: this.state.user.uid
     }).then(() => {
       this.cancelButtonTapped()
     })
@@ -99,10 +99,14 @@ export default class Question extends Component {
             />
             : null
           }
-          <FlatList
-              data={this.state.questionList}
-              renderItem={({item}) => <QuestionItem data={item} navigation={this.props.navigation} />}
-          />
+          {
+            this.state.questionList.length > 0
+            ?  <FlatList
+                data={this.state.questionList}
+                renderItem={({item}) => <QuestionItem data={item} navigation={this.props.navigation} />}
+            />
+          : <Text style={{textAlign: 'center', margin: 20}}>No questions added.</Text>
+          }
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add a question</Dialog.Title>
             <Dialog.Input value={this.state.question} onChangeText={(text) => this.setState({question: text})}></Dialog.Input>

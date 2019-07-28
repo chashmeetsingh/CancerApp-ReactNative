@@ -5,9 +5,9 @@ import BulletinBoardImage from '../../assets/bulletin-board.jpg'
 import CollabItem from "./CollabItem";
 
 import * as firebase from 'firebase';
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
+import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import Dialog from "react-native-dialog";
 
 export default class CollabBoardScreen extends Component {
@@ -16,7 +16,7 @@ export default class CollabBoardScreen extends Component {
     const {params = {}} = navigation.state;
     return {
       // title: navigation.state.params.title,
-      headerRight: <FontAwesomeIcon
+      headerRight: <AntDesignIcon
           name="plus"
           style={{color: 'white', paddingRight: 14}}
           size={22}
@@ -41,8 +41,10 @@ export default class CollabBoardScreen extends Component {
 
   state = {
     collabs: [],
+    pasWeekCollabs: [],
     isDialogVisible: false,
-    topic: ''
+    topic: '',
+    topicExists: false
   };
 
   showDialog = (show) => {
@@ -56,31 +58,63 @@ export default class CollabBoardScreen extends Component {
       name: this.state.topic,
       createdAt: Date.now(),
       user: {
-        id: FirebaseSVC.shared().currentUser.uid
-      }
+        id: Firebase.shared().currentUser.uid
+      },
+      updatedAt: Date.now(),
+      hits: 1
     };
-    this.mounted && firebase.database().ref('/collabs').orderByChild('name').equalTo(data.name).once('value', snapshot => {
-      if (snapshot.val() === null) {
-        firebase.database().ref('/collabs').push(data);
+    this.mounted && Firebase.shared().collabs().where("name", "==", data.name).limit(1).get().then(query => {
+      if (query.docs.length === 0) {
+        Firebase.shared().collabs().add(data);
+        this.showDialog(false);
+        this.setState({
+          topicExists: false
+        });
+      } else {
+        this.setState({
+          topicExists: true
+        });
       }
-      this.showDialog(false);
     })
   }
 
   getCollabs = () => {
-    this.mounted && firebase.database().ref('/collabs').once('value', snapshot => {
-      var collabs = [];
-      for (var key in snapshot.val()) {
-        var collab = snapshot.val()[key];
-        collab['id'] = key;
-        collabs.push(collab);
+    this.mounted && Firebase
+    .shared()
+    .collabs()
+    .orderBy('hits', 'desc')
+    .orderBy('updatedAt', 'desc')
+    .limit(7)
+    .get()
+    .then(query => {
+      for (var doc in query.docs) {
+        let data = query.docs[doc].data()
+        data['key'] = query.docs[doc].id
+        this.setState(prevState => ({
+          collabs: [...prevState.collabs, data]
+        }));
       }
+    })
 
-      this.setState({
-        collabs: collabs.sort((a, b) =>
-            Object.values(a.messages !== undefined ? a.messages : []).length < Object.values(b.messages !== undefined ? b.messages : []).length
-        ).slice(0, 5)
-      })
+
+    var sevenDaysAgo = Date.now() - (24*60*60*1000*7)
+    this.mounted && Firebase
+    .shared()
+    .collabs()
+    .where("updatedAt", "<=", Date.now())
+    .where("updatedAt", ">=", sevenDaysAgo)
+    .orderBy('updatedAt', 'desc')
+    .orderBy('hits', 'desc')
+    .limit(7)
+    .get()
+    .then(query => {
+      for (var doc in query.docs) {
+        let data = query.docs[doc].data()
+        data['key'] = query.docs[doc].id
+        this.setState(prevState => ({
+          pasWeekCollabs: [...prevState.pasWeekCollabs, data]
+        }));
+      }
     })
   }
 
@@ -98,7 +132,7 @@ export default class CollabBoardScreen extends Component {
             }}>
               {
                 this.state.collabs.map((item, index) => {
-                  return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
+                  return <CollabItem index={index} item={item} key={item.key} navigation={this.props.navigation} />
                 })
               }
             </View>
@@ -112,17 +146,21 @@ export default class CollabBoardScreen extends Component {
               justifyContent: 'center'
             }}>
               {
-                this.state.collabs.map((item, index) => {
-                  return <CollabItem index={index} item={item} key={item.id} navigation={this.props.navigation} />
+                this.state.pasWeekCollabs.map((item, index) => {
+                  return <CollabItem index={index} item={item} key={item.key} navigation={this.props.navigation} />
                 })
               }
             </View>
           </ScrollView>
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add a new topic</Dialog.Title>
-            {/* <Dialog.Description>
-          Do you want to delete this account? You cannot undo this action.
-        </Dialog.Description> */}
+            {
+              this.state.topicExists
+                  ? <Dialog.Description>
+                    Topic already exists.
+                  </Dialog.Description>
+                  : null
+            }
             <Dialog.Input onChangeText={(text) => this.setState({topic: text})}></Dialog.Input>
             <Dialog.Button label="Cancel" onPress={() => this.showDialog(false)} />
             <Dialog.Button label="Add" onPress={() => this.handleAddCollab()} />

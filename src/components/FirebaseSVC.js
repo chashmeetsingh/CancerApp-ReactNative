@@ -17,6 +17,7 @@ const firebaseConfig = {
 export default class FirebaseSVC {
 
     static instance = null;
+    propsData = {}
 
     constructor() {
       app.initializeApp(firebaseConfig);
@@ -63,4 +64,11 @@ export default class FirebaseSVC {
 
     idea = id => this.db.doc(`ideas/${id}`)
 
+    favorites = () => this.db.collection('favorites')
+
+    favorite = id => this.db.doc(`favorites/${id}`)
+
+    collabs = () => this.db.collection('collabs')
+
+    collab = id => this.db.doc(`collabs/${id}`)
 }

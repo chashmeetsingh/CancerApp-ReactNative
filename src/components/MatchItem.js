@@ -10,25 +10,79 @@ export default class MatchItem extends Component {
 
     currentUser = Firebase.shared().currentUser;
 
+    state = {
+      label: 'Favorite'
+    }
+
+    componentDidMount(){
+      Firebase
+      .shared()
+      .favorites()
+      .where("uid", "==", this.currentUser.uid)
+      .where("user", "==", this.props.user.uid)
+      .limit(1)
+      .get()
+      .then(query => {
+        if (query.size === 0) {
+          this.setState({
+            label: 'Favorite'
+          });
+        } else {
+          this.setState({
+            label: 'Unfavorite'
+          });
+        }
+      })
+    }
+
     collaborateButtonPressed = () => {
         const mid1 = this.currentUser.uid + ',' + this.props.user.uid
         const mid2 = this.props.user.uid + ',' + this.currentUser.uid
 
-        Firebase.shared().getMessage(mid1).get().then(doc => {
+        Firebase
+        .shared()
+        .getMessage(mid1)
+        .get()
+        .then(doc => {
           if (doc.exists) {
+            Firebase
+            .shared()
+            .propsData = {
+              user: this.props.user.uid,
+              mid: mid1
+            }
             this.props.navigation.navigate('Messaging');
           } else {
-            Firebase.shared().getMessage(mid2).get().then(doc => {
+            Firebase
+            .shared()
+            .getMessage(mid2)
+            .get()
+            .then(doc => {
               if (doc.exists) {
+                Firebase
+                .shared()
+                .propsData = {
+                  user: this.props.user.uid,
+                  mid: mid2
+                }
                 this.props.navigation.navigate('Messaging');
               } else {
-                Firebase.shared().getMessage(mid1).set({
+                Firebase
+                .shared()
+                .getMessage(mid1)
+                .set({
                   createdAt: Date.now(),
                   createdBy: this.currentUser.uid,
                   member: this.props.user.uid,
                   status: 'waiting',
                   updatedAt: Date.now()
                 }).then(() => {
+                  Firebase
+                  .shared()
+                  .propsData = {
+                    user: this.props.user.uid,
+                    mid: mid1
+                  }
                   this.props.navigation.navigate('Messaging');
                 })
               }
@@ -37,15 +91,37 @@ export default class MatchItem extends Component {
         })
     };
 
-    unfavoriteButtonTapped = () => {
-        firebase.database().ref('/saves/' + this.currentUser.uid).once('value', (snapshot) => {
-            var values = snapshot.val() === null ? [] : snapshot.val();
-
-            if (!values.includes(this.props.user.uid) && this.props.user.uid != this.currentUser.uid) {
-                values.push(this.props.user.uid);
-            }
-            firebase.database().ref('/saves/' + this.currentUser.uid).set(values);
-        })
+    favoriteButtonTapped = () => {
+      Firebase
+      .shared()
+      .favorites()
+      .where("uid", "==", this.currentUser.uid)
+      .where("user", "==", this.props.user.uid)
+      .limit(1)
+      .get()
+      .then(query => {
+        if (query.size === 0) {
+          this.setState({
+            label: 'Unfavorite'
+          });
+          Firebase
+          .shared()
+          .favorites()
+          .add({
+            createdAt: Date.now(),
+            uid: this.currentUser.uid,
+            user: this.props.user.uid
+          })
+        } else {
+          this.setState({
+            label: 'Favorite'
+          });
+          Firebase
+          .shared()
+          .favorite(query.docs[0].id)
+          .delete()
+        }
+      })
     };
 
     itemTapped() {
@@ -73,11 +149,11 @@ export default class MatchItem extends Component {
                             onPress={() => this.collaborateButtonPressed()}
                         />
                         <Button
-                            title='Favorite'
+                            title={this.state.label}
                             buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10}}
                             containerStyle={{flex: 1, margin: 4}}
                             titleStyle={{color: 'white'}}
-                            onPress={() => this.unfavoriteButtonTapped()}
+                            onPress={() => this.favoriteButtonTapped()}
                         />
                     </View>
                 </View>

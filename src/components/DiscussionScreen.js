@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import * as firebase from 'firebase';
 import {Bubble, GiftedChat} from 'react-native-gifted-chat'
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 
 export default class DiscussionScreen extends Component {
 
@@ -23,35 +23,50 @@ export default class DiscussionScreen extends Component {
     componentDidMount() {
         this.mounted = true
         this.collab = this.props.navigation.getParam('collab');
-
         this.getThreadMessages()
     }
 
     getThreadMessages() {
-        this.mounted && firebase.database().ref('/collabs/' + this.collab.id + '/messages').on('value', snapshot => {
-            var messages = [];
-            for (var key in snapshot.val()) {
-                messages.push(snapshot.val()[key]);
-            }
-            this.setState({messages: messages.reverse()});
+        Firebase.shared().collab(this.collab.key).collection('discussion').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+          var messages = [];
+          for (var doc in snapshot.docs) {
+            messages.push(snapshot.docs[doc].data());
+          }
+          this.setState({
+            messages: messages
+          });
+        })
+
+        Firebase.shared().collab(this.collab.key).get().then(doc => {
+          var hits = doc.data().hits;
+          Firebase.shared().collab(this.collab.key).update({
+            hits: hits + 1
+          })
         })
     }
 
     get user() {
-        const currentUser = FirebaseSVC.shared().currentUser;
+        const currentUser = Firebase.shared().currentUser;
 
         return {
             name: currentUser.name,
             id: currentUser.uid,
             _id: currentUser.uid,
-            avatar: currentUser.photoUrl
+            avatar: currentUser.photoURL
         };
     }
 
     onSend(messages = []) {
         let message = messages[0];
         message.createdAt = Date.now();
-        this.mounted && firebase.database().ref('/collabs/' + this.collab.id + '/messages').push(message);
+        this.mounted && Firebase.shared().collab(this.collab.key).collection('discussion').add(message);
+        Firebase.shared().collab(this.collab.key).get().then(doc => {
+          var hits = doc.data().hits;
+          Firebase.shared().collab(this.collab.key).update({
+            hits: hits + 1,
+            updatedAt: Date.now()
+          })
+        })
     }
 
     renderBubble = (props) => {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {FlatList, StyleSheet, View} from 'react-native'
+import {FlatList, StyleSheet, View, Text} from 'react-native'
 import {Button} from 'react-native-elements'
 import IdeaItem from './IdeaItem'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
@@ -107,10 +107,14 @@ export default class Ideas extends Component {
             />
             : null
           }
-          <FlatList
-              data={this.state.ideaList}
-              renderItem={({item}) => <IdeaItem data={item} />}
-          />
+          {
+            this.state.ideaList.length > 0
+            ? <FlatList
+                data={this.state.ideaList}
+                renderItem={({item}) => <IdeaItem data={item} />}
+            />
+          : <Text style={{textAlign: 'center', margin: 20}}>No ideas added.</Text>
+          }
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add an idea</Dialog.Title>
             <Dialog.Input value={this.state.idea} onChangeText={(text) => this.setState({idea: text})}></Dialog.Input>

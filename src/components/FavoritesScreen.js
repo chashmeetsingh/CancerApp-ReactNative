@@ -3,7 +3,7 @@ import {FlatList, StyleSheet, Text, View} from 'react-native'
 import FavoriteItem from "./FavoriteItem";
 
 import * as firebase from 'firebase';
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 
 export default class FavoritesScreen extends Component {
 
@@ -12,33 +12,37 @@ export default class FavoritesScreen extends Component {
     };
 
     componentDidMount() {
-        this.userIds = [];
+        this.mounted = true
         this.getFavorites()
     }
 
-    getFavorites() {
-        firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).on('value', snapshot => {
-            if (snapshot.val() !== null) {
-                this.userIds = snapshot.val();
-                this.getUserInfo();
-            } else {
-                this.setState({
-                    userList: []
-                })
-            }
-        })
+    componentWillUnmount(){
+      this.mounted = false
     }
 
-    getUserInfo() {
-        var userData = [];
-        this.userIds.forEach((uid) => {
-            firebase.database().ref('/users/' + uid).once('value', snapshot => {
-                userData.push(snapshot.val());
-                this.setState({
-                    userList: [...userData]
-                })
-            })
-        })
+    getFavorites() {
+      this.mounted &&
+      Firebase
+      .shared()
+      .favorites()
+      .where("uid", "==", Firebase.shared().currentUser.uid)
+      .onSnapshot(query => {
+        query.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            let data = change.doc.data();
+            data['key'] = change.doc.id;
+            this.setState(prevState => ({
+              userList: [...prevState.userList, data]
+            }));
+          } else if (change.type === 'removed') {
+            this.setState({userList: this.state.userList.filter(function(user) {
+                return
+                user.uid !== change.doc.data().uid
+                && user.user !== change.doc.data().user
+            })});
+          }
+        });
+      })
     }
 
     render() {

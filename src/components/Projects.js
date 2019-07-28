@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {FlatList, ScrollView, StyleSheet} from 'react-native'
+import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native'
 import {Button} from 'react-native-elements'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import Firebase from "./FirebaseSVC";
@@ -49,11 +49,6 @@ export default class Projects extends Component {
     }).then(() => {
       this.cancelButtonTapped()
     })
-
-    // firebase.database().ref('/users/' + this.currentUser.uid + '/projects').push({
-    //   url: this.state.projectURL
-    // });
-    // this.cancelButtonTapped()
   }
 
   showDialog = (show) => {
@@ -103,11 +98,15 @@ export default class Projects extends Component {
             />
             : null
           }
-          <FlatList
-              data={this.state.projectList}
-              renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
-              keyExtractor={(item) => item.key}
-          />
+          {
+            this.state.projectList.length > 0
+            ?  <FlatList
+                data={this.state.projectList}
+                renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
+                keyExtractor={(item) => item.key}
+            />
+          : <Text style={{textAlign: 'center', margin: 20}}>No projects added.</Text>
+          }
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add project url</Dialog.Title>
             <Dialog.Input value={this.state.projectURL} onChangeText={(text) => this.setState({projectURL: text.toLowerCase()})}></Dialog.Input>
@@ -130,6 +129,6 @@ export default class Projects extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee'
+    backgroundColor: '#eee',
   }
 })

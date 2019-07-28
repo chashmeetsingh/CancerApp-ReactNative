@@ -21,28 +21,50 @@ export default class MessageScreen extends Component {
         this.mounted = true
         this.getUserList()
 
-        // this.propsReceived = this.props.navigation.addListener('willFocus', () => {
-        //     if (FirebaseSVC.shared().propsData !== null) {
-        //         this.openChatIfIdExists();
-        //     }
-        // })
-
+        this.propsReceived = this.props.navigation.addListener('willFocus', () => {
+            if (Firebase.shared().propsData !== null) {
+                this.openChatIfIdExists();
+            }
+        })
     }
 
     componentWillUnmount() {
         this.mounted = false
+        this.propsReceived()
     }
 
     openChatIfIdExists() {
-        // var {user, mid} = FirebaseSVC.shared().propsData;
-        //
-        // if (user && mid) {
-        //     var user = user;
-        //     user['messageKey'] = mid;
-        //
-        //     this.props.navigation.navigate('MessageDetailView', {user: user})
-        //     FirebaseSVC.shared().setPropsData(null);
-        // }
+        var uid = Firebase.shared().propsData.user;
+        var mid = Firebase.shared().propsData.mid;
+
+        if (uid && mid) {
+          Firebase.shared().user(uid).get().then(doc => {
+            if (doc.exists) {
+              var user = doc.data()
+            }
+
+            Firebase.shared().getMessage(mid).get().then(doc => {
+              var conversation = {};
+              if (doc.exists) {
+                conversation = doc.data();
+              } else {
+                conversation = {
+                  createdAt: Date.now(),
+                  createdBy: Firebase.shared().currentUser.uid,
+                  member: uid,
+                  status: 'waiting',
+                  updatedAt: Date.now()
+                };
+                Firebase
+                .shared()
+                .getMessage(mid)
+                .set(conversation)
+              }
+              this.props.navigation.navigate('MessageDetailView', {user: user, conversation: doc.data()})
+              Firebase.shared().propsData = null
+            })
+          })
+        }
     }
 
     getUserList = () => {

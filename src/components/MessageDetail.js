@@ -81,16 +81,6 @@ export default class MessageDetail extends Component {
       })
     }
 
-    getRequestStatus() {
-      // this.mounted && Firebase.shared().message()
-        // firebase.database().ref('/messages/' + this.messageKey).on('value', snapshot => {
-        //     this.setState({
-        //         status: snapshot.val().status,
-        //         threadCreator: snapshot.val().user
-        //     });
-        // })
-    }
-
     get user() {
         const currentUser = Firebase.shared().currentUser;
         return {
@@ -101,17 +91,6 @@ export default class MessageDetail extends Component {
         };
     }
 
-    // async getMessages() {
-      // console.log(this.data, this.conversation)
-        // firebase.database().ref('/messages/' + this.messageKey + '/list').on('value', (snapshot) => {
-        //     var messages = [];
-        //     for (var key in snapshot.val()) {
-        //         messages.push(snapshot.val()[key]);
-        //     }
-        //     this.mounted && this.setState({messages: messages.reverse()});
-        // })
-    // };
-
     onSend(messages = []) {
         let message = messages[0];
         message.createdAt = Date.now();
@@ -120,7 +99,6 @@ export default class MessageDetail extends Component {
             updatedAt: Date.now()
           })
         });
-        // firebase.database().ref('/messages/' + this.messageKey + '/list').push(message);
     }
 
     renderBubble = (props) => {

@@ -4,23 +4,47 @@ import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import {Button} from "react-native-elements";
 
 import * as firebase from 'firebase';
-import FirebaseSVC from "./FirebaseSVC";
+import Firebase from "./FirebaseSVC";
 
 export default class FavoriteItem extends Component {
+
+  state = {
+    user: {
+      name: '',
+      title: '',
+      reasearch_fields: ''
+    }
+  }
+
+  componentDidMount(){
+    Firebase.shared().user(this.props.user.user).get().then(doc => {
+      this.setState({
+        user: doc.data()
+      });
+    })
+  }
 
     collaborateButtonPressed() {
 
     }
 
-    unfavoriteButtonTapped() {
-        firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).once('value', snapshot => {
-            for (var key in snapshot.val()) {
-                if (snapshot.val()[key] === this.props.user.uid) {
-                    firebase.database().ref('/saves/' + FirebaseSVC.shared().currentUser.uid).child(key).remove();
-                    break;
-                }
-            }
-        });
+    favoriteButtonTapped() {
+      Firebase
+      .shared()
+      .favorites()
+      .where("uid", "==", Firebase.shared().currentUser.uid)
+      .where("user", "==", this.state.user.uid)
+      .limit(1)
+      .get()
+      .then(query => {
+        console.log(query.size)
+        if (query.size !== 0) {
+          Firebase
+          .shared()
+          .favorite(query.docs[0].id)
+          .delete()
+        }
+      })
     }
 
     render() {
@@ -32,9 +56,9 @@ export default class FavoriteItem extends Component {
                     size={28}
                 />
                 <View style={styles.innerContainer}>
-                    <Text style={{fontSize: 17, fontWeight: 'bold', margin: 1}}>{this.props.user.name}</Text>
-                    <Text style={{fontSize: 14, margin: 1}}>{this.props.user.title}</Text>
-                    <Text style={{fontSize: 14, color: 'gray', margin: 1}}>{this.props.user.research_fields}</Text>
+                    <Text style={{fontSize: 17, fontWeight: 'bold', margin: 1}}>{this.state.user.name}</Text>
+                    <Text style={{fontSize: 14, margin: 1}}>{this.state.user.title}</Text>
+                    <Text style={{fontSize: 14, color: 'gray', margin: 1}}>{this.state.user.research_fields}</Text>
                     <View style={styles.buttonsView}>
                         <Button
                             title='Collaborate'
@@ -48,7 +72,7 @@ export default class FavoriteItem extends Component {
                             buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10}}
                             containerStyle={{flex: 1, margin: 4}}
                             titleStyle={{color: 'white'}}
-                            onPress={() => this.unfavoriteButtonTapped()}
+                            onPress={() => this.favoriteButtonTapped()}
                         />
                     </View>
                 </View>
@@ -72,7 +96,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 0.5},
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 1,
     },
     innerContainer: {

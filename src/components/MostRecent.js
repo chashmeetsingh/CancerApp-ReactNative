@@ -32,17 +32,6 @@ export default class MostRecent extends Component {
           userList: userList
         });
       })
-        // firebase.database().ref('/users').on('value', (snapshot) => {
-        //     var users = [];
-        //     for (var uid in snapshot.val()) {
-        //         if (uid !== firebase.auth().currentUser.uid) {
-        //             users.push(snapshot.val()[uid]);
-        //         }
-        //     }
-        //     this.setState({userList: users}, () => {
-        //       console.log(this.state.userList)
-        //     });
-        // })
     };
 
     render() {
