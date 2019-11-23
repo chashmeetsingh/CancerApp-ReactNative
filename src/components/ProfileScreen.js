@@ -7,7 +7,6 @@ import Projects from './Projects'
 import Questions from './Questions'
 import Ideas from './Ideas'
 import Firebase from "./FirebaseSVC";
-import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { StackActions, NavigationActions } from 'react-navigation';
 
@@ -22,6 +21,12 @@ export default class ProfileScreen extends Component {
                   style={{color: 'white', paddingRight: 14}}
                   size={22}
                   onPress={() => params.logout(params)}
+              />,
+              headerLeft: <MaterialCommunityIcon
+                  name="information-outline"
+                  style={{color: 'white', paddingLeft: 14}}
+                  size={22}
+                  onPress={() => params.appAboutSection(params)}
               />
           };
         } else {
@@ -41,7 +46,8 @@ export default class ProfileScreen extends Component {
       this.props.navigation.setParams({
           logout: this.logout,
           navigation: this.props.navigation,
-          showLogoutButton: this.props.navigation.getParam('user', Firebase.shared().currentUser).uid === Firebase.shared().currentUser.uid
+          showLogoutButton: this.props.navigation.getParam('user', Firebase.shared().currentUser).uid === Firebase.shared().currentUser.uid,
+          appAboutSection: this.appAboutSection
       });
     }
 
@@ -71,11 +77,15 @@ export default class ProfileScreen extends Component {
       });
     }
 
+    appAboutSection(params) {
+        params.navigation.navigate('AboutView');
+    }
+
     handleIndexChange = (index) => {
         this.setState({
             index,
         });
-    }
+    };
 
     renderTabBar = (props) => (
         <TabBar

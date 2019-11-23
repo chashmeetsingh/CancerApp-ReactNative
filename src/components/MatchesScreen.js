@@ -12,7 +12,7 @@ export default class MatchesScreen extends Component {
         index: 0,
         routes: [
             { key: '1', title: 'Most Recent' },
-            { key: '2', title: 'Most Relative' },
+            { key: '2', title: 'Most Relevant' },
             { key: '3', title: 'Most Popular' },
         ],
     };

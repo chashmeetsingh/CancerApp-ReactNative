@@ -71,4 +71,8 @@ export default class FirebaseSVC {
     collabs = () => this.db.collection('collabs')
 
     collab = id => this.db.doc(`collabs/${id}`)
+
+    events = () => this.db.collection('events')
+
+    event = id => this.db.doc(`events/${id}`)
 }

@@ -9,71 +9,23 @@ import Firebase from "./FirebaseSVC";
 export default class FavoriteItem extends Component {
 
   state = {
-    user: {
-      name: '',
-      title: '',
-      reasearch_fields: ''
-    }
-  }
-
-  componentDidMount(){
-    Firebase.shared().user(this.props.user.user).get().then(doc => {
-      this.setState({
-        user: doc.data()
-      });
-    })
-  }
-
-    collaborateButtonPressed() {
-
-    }
-
-    favoriteButtonTapped() {
-      Firebase
-      .shared()
-      .favorites()
-      .where("uid", "==", Firebase.shared().currentUser.uid)
-      .where("user", "==", this.state.user.uid)
-      .limit(1)
-      .get()
-      .then(query => {
-        console.log(query.size)
-        if (query.size !== 0) {
-          Firebase
-          .shared()
-          .favorite(query.docs[0].id)
-          .delete()
-        }
-      })
-    }
+  };
 
     render() {
         return (
             <View style={styles.outerContainer}>
-                <AntDesignIcon
-                    name="star"
-                    style={{color: '#008080', margin: 8}}
-                    size={28}
-                />
                 <View style={styles.innerContainer}>
-                    <Text style={{fontSize: 17, fontWeight: 'bold', margin: 1}}>{this.state.user.name}</Text>
-                    <Text style={{fontSize: 14, margin: 1}}>{this.state.user.title}</Text>
-                    <Text style={{fontSize: 14, color: 'gray', margin: 1}}>{this.state.user.research_fields}</Text>
-                    <View style={styles.buttonsView}>
-                        <Button
-                            title='Collaborate'
-                            buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10}}
-                            containerStyle={{flex: 1, margin: 4}}
-                            titleStyle={{color: 'white'}}
-                            onPress={() => this.collaborateButtonPressed()}
-                        />
-                        <Button
-                            title='Unfavorite'
-                            buttonStyle={{backgroundColor: '#00BCD4', borderRadius: 10}}
-                            containerStyle={{flex: 1, margin: 4}}
-                            titleStyle={{color: 'white'}}
-                            onPress={() => this.favoriteButtonTapped()}
-                        />
+                    <View style={{ dislay: 'flex', flexDirection: 'column', marginBottom: 4 }}>
+                        <Text style={{fontWeight: "bold"}}>Event Name:</Text>
+                        <Text>{this.props.event.eventName}</Text>
+                    </View>
+                    <View style={{ dislay: 'flex', flexDirection: 'column', marginBottom: 4 }}>
+                        <Text style={{fontWeight: "bold"}}>Location:</Text>
+                        <Text>{this.props.event.eventLocation}</Text>
+                    </View>
+                    <View style={{ dislay: 'flex', flexDirection: 'column' }}>
+                        <Text style={{fontWeight: "bold"}}>Description:</Text>
+                        <Text>{this.props.event.eventDescription}</Text>
                     </View>
                 </View>
             </View>
@@ -98,6 +50,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0.5},
         shadowOpacity: 0.2,
         shadowRadius: 1,
+        padding: 10
     },
     innerContainer: {
         flexDirection: 'column',

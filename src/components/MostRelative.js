@@ -3,12 +3,15 @@ import {FlatList, StyleSheet, View} from 'react-native'
 
 import * as firebase from 'firebase';
 import MatchItem from "./MatchItem";
+import { SearchBar } from 'react-native-elements';
+import Firebase from "./FirebaseSVC";
 
 export default class MostRelative extends Component {
 
     state = {
-        userList: []
-    }
+        userList: [],
+        search: ''
+    };
 
     componentDidMount() {
       this.mounted = true
@@ -20,22 +23,36 @@ export default class MostRelative extends Component {
     }
 
     getMatches = () => {
-        this.mounted && firebase.database().ref('/users').on('value', (snapshot) => {
-            var users = [];
-            for (var uid in snapshot.val()) {
-                if (uid !== firebase.auth().currentUser.uid) {
-                    users.push(snapshot.val()[uid]);
+        this.mounted && Firebase.shared().users().get().then(query => {
+            var userList = [];
+            for (var doc in query.docs) {
+                if (query.docs[doc].data().uid !== Firebase.shared().currentUser.uid) {
+                    userList.push(query.docs[doc].data());
                 }
             }
-            this.setState({userList: users});
+            this.setState({
+                userList: userList
+            });
         })
+    };
+
+    updateSearch = search => {
+        this.setState({ search });
     };
 
     render() {
         return (
             <View style={styles.container}>
+                <SearchBar
+                    placeholder="Type Here..."
+                    onChangeText={this.updateSearch}
+                    value={this.state.search}
+                    containerStyle={{backgroundColor: '#eee', borderColor: 'red'}}
+                    inputContainerStyle={{backgroundColor: 'white'}}
+                    lightTheme={true}
+                />
                 <FlatList
-                    data={this.state.userList}
+                    data={this.state.userList.filter(a => a.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1)}
                     renderItem={({item}) => <MatchItem user={item} navigation={this.props.navigation} />}
                     keyExtractor={(item) => item.uid}
                 />

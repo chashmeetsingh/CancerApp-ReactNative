@@ -69,8 +69,26 @@ const constraints = {
     length: {
       minimum: 1
     }
+  },
+  eventName: {
+    presence: true,
+    length: {
+      minimum: 5
+    }
+  },
+  eventLocation: {
+    presence: true,
+    length: {
+      minimum: 1
+    }
+  },
+  eventDescription: {
+    presence: true,
+    length: {
+      minimum: 1
+    }
   }
-}
+};
 
 export default function validator(field, value) {
 

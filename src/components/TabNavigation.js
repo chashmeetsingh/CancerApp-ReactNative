@@ -15,6 +15,7 @@ import DiscussionScreen from "./DiscussionScreen"
 import ProjectDetailScreen from "./ProjectDetail"
 import QuestionDetailScreen from "./QuestionDetail"
 import SignInScreen from './SignInScreen'
+import AboutScreen from "./AboutScreen";
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -109,6 +110,16 @@ const ProfileStack = createStackNavigator({
                 backgroundColor: '#00BCD4',
             }
         }
+    },
+    AboutView: {
+        screen: AboutScreen,
+        navigationOptions: {
+            title: 'About',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
     }
 });
 
@@ -179,11 +190,11 @@ ProfileStack.navigationOptions = ({navigation}) => {
     };
 };
 
-const SavesStack = createStackNavigator({
+const EventsStack = createStackNavigator({
     SavesView: {
         screen: FavoritesScreen,
         navigationOptions: {
-            title: 'Favorites',
+            title: 'Nearby Events',
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#00BCD4',
@@ -224,11 +235,11 @@ const BottomTabNavigator = createBottomTabNavigator({
         }
     },
     Saves: {
-        screen: SavesStack,
+        screen: EventsStack,
         navigationOptions: {
             tabBarIcon: ({tintColor}) => (
                 <MaterialIcons
-                    name="favorite"
+                    name="event"
                     style={{color: tintColor}}
                     size={28}
                 />
