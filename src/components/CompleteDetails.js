@@ -19,6 +19,7 @@ export default class CompleteDetails extends Component {
     };
 
     componentDidMount() {
+        Firebase.shared().getCurrentUser();
         this.setState(Firebase.shared().currentUser);
     }
 
@@ -52,9 +53,9 @@ export default class CompleteDetails extends Component {
             !websiteLinkError &&
             !keywordsError &&
             !bioError) {
-            // console.log('passed validation');
+            console.log('passed validation');
 
-            Firebase.shared().user(this.state.uid).set({
+            Firebase.shared().user(Firebase.shared().currentUser.uid).set({
               title: this.state.title,
               affiliation: this.state.affiliation,
               location: this.state.location,
@@ -66,6 +67,16 @@ export default class CompleteDetails extends Component {
             }, {
               merge: true
             }).then(() => {
+                this.setState({
+                    title: '',
+                    affiliation: '',
+                    location: '',
+                    experience: '',
+                    research_fields: '',
+                    website_link: '',
+                    keywords: '',
+                    bio: ''
+                });
               const resetAction = StackActions.reset({
                 index: 0,
                 actions: [NavigationActions.navigate({ routeName: 'BottomTabNavigator' })],

@@ -39,7 +39,16 @@ export default class ProfileScreen extends Component {
     componentWillReceiveProps(nextProps){
       this.setState({
         user: this.props.navigation.getParam('user', Firebase.shared().currentUser)
-      })
+      });
+      const user = this.props.navigation.getParam('user', null);
+      if (user !== null) {
+          Firebase.shared().user(user.uid).get().then(doc => {
+              const visits = doc.data().visits + 1;
+              Firebase.shared().user(user.uid).update({
+                  visits: visits
+              })
+          })
+      }
     }
 
     componentDidMount() {

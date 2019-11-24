@@ -38,7 +38,7 @@ export default class SignInScreen extends Component {
         research_fields: "",
         website_link: "",
         keywords: "",
-        bio: "",
+        bio: ""
       }
     };
 
@@ -60,6 +60,7 @@ export default class SignInScreen extends Component {
 
     completeSignIn(user) {
       this.mounted && Firebase.shared().getCurrentUser();
+      console.log('User ID: ', user.uid);
 
       this.mounted && Firebase.shared().user(user.uid).get().then(doc => {
         if (doc.exists) {
@@ -72,6 +73,7 @@ export default class SignInScreen extends Component {
                 return;
               }
             }
+            Firebase.shared().getCurrentUser();
             this.openHomeView()
           });
         } else {
@@ -87,11 +89,18 @@ export default class SignInScreen extends Component {
             bio: this.state.user.bio,
             uid: user.uid,
             name: user.displayName,
-            photoURL: user.photoURL.replace("s96-c", "s256-c") + '?width=300&height=300'
+            photoURL: user.photoURL.replace("s96-c", "s256-c") + '?width=300&height=300',
+            visits: 0
           }, {
             merge: true
           }).then(() => {
-            this.openHomeView()
+              for (var key in this.state.user) {
+                  if (this.state.user[key] === "") {
+                      this.completeDetails();
+                      return;
+                  }
+              }
+              this.openHomeView();
           })
         }
       })

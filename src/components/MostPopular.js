@@ -23,7 +23,7 @@ export default class MostPopular extends Component {
     }
 
     getMatches = () => {
-        this.mounted && Firebase.shared().users().get().then(query => {
+        this.mounted && Firebase.shared().users().orderBy('visits', 'desc').get().then(query => {
             var userList = [];
             for (var doc in query.docs) {
                 if (query.docs[doc].data().uid !== Firebase.shared().currentUser.uid) {

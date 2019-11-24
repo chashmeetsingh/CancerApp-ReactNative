@@ -39,12 +39,12 @@ export default class FirebaseSVC {
 
     users = () => this.db.collection('users')
 
-    getCurrentUser = () => {
+    getCurrentUser() {
       this.user(this.auth.currentUser.uid).get().then(doc => {
         if (doc.exists) {
           this.currentUser = doc.data();
         }
-        console.log(this.currentUser.uid)
+        console.log('Get current user called:', this.auth.currentUser.uid)
       })
     };
 
