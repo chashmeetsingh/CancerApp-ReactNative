@@ -16,6 +16,18 @@ import ProjectDetailScreen from "./ProjectDetail"
 import QuestionDetailScreen from "./QuestionDetail"
 import SignInScreen from './SignInScreen'
 import AboutScreen from "./AboutScreen";
+import CalendarScreen from "./CalendarScreen";
+
+// const CalendarStack = createStackNavigator({
+//     CalendarView: CalendarScreen,
+//     navigationOptions: {
+//         headerTitle: 'Calendar',
+//         headerTintColor: 'white',
+//         headerStyle: {
+//             backgroundColor: '#00BCD4',
+//         },
+//     }
+// });
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -146,6 +158,17 @@ const CollabStack = createStackNavigator({
     }
 });
 
+// CalendarStack.navigationOptions = ({navigation}) => {
+//     let tabBarVisible = true;
+//     if (navigation.state.index > 0) {
+//         tabBarVisible = false;
+//     }
+//
+//     return {
+//         tabBarVisible,
+//     };
+// };
+
 MatchesStack.navigationOptions = ({navigation}) => {
     let tabBarVisible = true;
     if (navigation.state.index > 0) {
@@ -205,7 +228,7 @@ const EventsStack = createStackNavigator({
 
 const SignIn = createStackNavigator({
   SignInView: {
-    screen: SignInScreen
+    screen: CalendarScreen//SignInScreen
   }
 })
 
@@ -246,6 +269,18 @@ const BottomTabNavigator = createBottomTabNavigator({
             ),
         }
     },
+    // Calendar: {
+    //     screen: CalendarStack,
+    //     navigationOptions: {
+    //         tabBarIcon: ({tintColor}) => (
+    //           <MaterialIcons
+    //             name="random"
+    //             style={{color: tintColor}}
+    //             size={28}
+    //           />
+    //         ),
+    //     }
+    // },
     Messaging: {
         screen: MessagingStack,
         navigationOptions: {
@@ -270,15 +305,16 @@ const BottomTabNavigator = createBottomTabNavigator({
             ),
         }
     },
-}, {
-    tabBarOptions: {
-        showLabel: false,
-        style: {
-            backgroundColor: '#eee',
-        },
-        activeTintColor: '#00BCD4',
-        inactiveTintColor: 'gray'
+    }, {
+        tabBarOptions: {
+            showLabel: false,
+            style: {
+                backgroundColor: '#eee',
+            },
+            activeTintColor: '#00BCD4',
+            inactiveTintColor: 'gray'
+        }
     }
-});
+);
 
 export default createAppContainer(BottomTabNavigator);

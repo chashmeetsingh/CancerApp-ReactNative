@@ -6,6 +6,7 @@ import SignInScreen from './SignInScreen'
 import {fromBottom} from 'react-navigation-transitions'
 import CompleteDetails from "./CompleteDetails";
 import TabNavigation from "./TabNavigation";
+import CalendarScreen from "./CalendarScreen";
 
 const handleCustomTransition = ({ scenes }) => {
     const prevScene = scenes[scenes.length - 2];
@@ -28,7 +29,7 @@ const handleCustomTransition = ({ scenes }) => {
 
 const MainNavigator = createStackNavigator({
     Welcome: {screen: WelcomeScreen},
-    SignIn: {screen: SignInScreen},
+    SignIn: {screen: CalendarScreen},
     CompleteDetails: {screen: CompleteDetails},
     BottomTabNavigator: {
         screen: TabNavigation,
