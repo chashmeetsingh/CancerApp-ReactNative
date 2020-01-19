@@ -68,6 +68,9 @@ export default class MessageScreen extends Component {
     }
 
     getUserList = () => {
+      this.setState({
+        conversations: []
+      });
       this.mounted && Firebase.shared().messages().where("createdBy", "==", Firebase.shared().currentUser.uid).onSnapshot(query => {
         query.docChanges().forEach(change => {
           if (change.type === 'added') {

@@ -16,18 +16,7 @@ import ProjectDetailScreen from "./ProjectDetail"
 import QuestionDetailScreen from "./QuestionDetail"
 import SignInScreen from './SignInScreen'
 import AboutScreen from "./AboutScreen";
-import CalendarScreen from "./CalendarScreen";
-
-// const CalendarStack = createStackNavigator({
-//     CalendarView: CalendarScreen,
-//     navigationOptions: {
-//         headerTitle: 'Calendar',
-//         headerTintColor: 'white',
-//         headerStyle: {
-//             backgroundColor: '#00BCD4',
-//         },
-//     }
-// });
+import MyCollabs from "./MyCollabs";
 
 const MatchesStack = createStackNavigator({
     MatchesView: {
@@ -69,6 +58,36 @@ const MatchesStack = createStackNavigator({
             }
         }
     },
+    ProfileView: {
+        screen: ProfileScreen,
+        navigationOptions: {
+            title: 'Profile',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
+    ProjectDetailView: {
+        screen: ProjectDetailScreen,
+        navigationOptions: {
+            title: 'Project Details',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
+    QuestionDetailView: {
+        screen: QuestionDetailScreen,
+        navigationOptions: {
+            title: 'Comments',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
 });
 
 const MessagingStack = createStackNavigator({
@@ -103,7 +122,7 @@ const ProfileStack = createStackNavigator({
             }
         }
     },
-    ProfileDetailView: {
+    ProjectDetailView: {
         screen: ProjectDetailScreen,
         navigationOptions: {
             title: 'Discussion',
@@ -127,6 +146,16 @@ const ProfileStack = createStackNavigator({
         screen: AboutScreen,
         navigationOptions: {
             title: 'About',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#00BCD4',
+            }
+        }
+    },
+    MyCollabsView: {
+        screen: MyCollabs,
+        navigationOptions: {
+            title: 'My Collabs',
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#00BCD4',
@@ -157,17 +186,6 @@ const CollabStack = createStackNavigator({
         }
     }
 });
-
-// CalendarStack.navigationOptions = ({navigation}) => {
-//     let tabBarVisible = true;
-//     if (navigation.state.index > 0) {
-//         tabBarVisible = false;
-//     }
-//
-//     return {
-//         tabBarVisible,
-//     };
-// };
 
 MatchesStack.navigationOptions = ({navigation}) => {
     let tabBarVisible = true;
@@ -228,7 +246,7 @@ const EventsStack = createStackNavigator({
 
 const SignIn = createStackNavigator({
   SignInView: {
-    screen: CalendarScreen//SignInScreen
+    screen: SignInScreen
   }
 })
 
@@ -269,18 +287,6 @@ const BottomTabNavigator = createBottomTabNavigator({
             ),
         }
     },
-    // Calendar: {
-    //     screen: CalendarStack,
-    //     navigationOptions: {
-    //         tabBarIcon: ({tintColor}) => (
-    //           <MaterialIcons
-    //             name="random"
-    //             style={{color: tintColor}}
-    //             size={28}
-    //           />
-    //         ),
-    //     }
-    // },
     Messaging: {
         screen: MessagingStack,
         navigationOptions: {

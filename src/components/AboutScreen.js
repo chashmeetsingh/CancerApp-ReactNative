@@ -26,13 +26,15 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     versionDetails: {
-        marginTop: 20
+        marginTop: 20,
+        fontSize: 18
     },
     description: {
         marginTop: 20,
         marginLeft: 32,
         marginRight: 32,
         textAlign: 'center',
-        fontSize: 15
+        fontSize: 17,
+        lineHeight: 25
     }
 });

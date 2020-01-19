@@ -120,7 +120,11 @@ export default class ProfileScreen extends Component {
             default:
                 return null;
         }
-    }
+    };
+
+  myCollabsButtonPressed() {
+    this.props.navigation.navigate('MyCollabsView');
+  }
 
     render() {
         return (
@@ -130,12 +134,18 @@ export default class ProfileScreen extends Component {
                         style={styles.profileImage}
                         source={{uri: this.state.user.photoURL }}
                     />
+                  {
+                    this.state.user.uid == Firebase.shared().currentUser.uid
+                    ?
                     <Button
-                        title='My Collabs'
-                        buttonStyle={{backgroundColor: 'white', borderRadius: 10, margin: 10}}
-                        containerStyle={{alignItems: 'center', justifyContent: 'center'}}
-                        titleStyle={{color: '#00BCD4'}}
+                    title='My Collabs'
+                    buttonStyle={{backgroundColor: 'white', borderRadius: 10, margin: 10}}
+                    containerStyle={{alignItems: 'center', justifyContent: 'center'}}
+                    titleStyle={{color: '#00BCD4'}}
+                    onPress={() => this.myCollabsButtonPressed()}
                     />
+                    : null
+                  }
                 </View>
                 <TabView
                     navigationState={this.state}

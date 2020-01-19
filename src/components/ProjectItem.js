@@ -4,7 +4,8 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native'
 export default class ProjectItem extends Component {
 
   projectItemPressed() {
-    this.props.navigation.navigate('ProfileDetailView', {project: this.props.data})
+    console.log(this.props.user);
+    this.props.navigation.navigate('ProjectDetailView', {project: this.props.data, user: this.props.user})
   }
 
   render() {

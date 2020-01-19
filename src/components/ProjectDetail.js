@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {FlatList, StyleSheet, View, YellowBox} from 'react-native'
+import {FlatList, StyleSheet, View, YellowBox, Text} from 'react-native'
 import {FloatingAction} from "react-native-floating-action";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,14 +15,20 @@ export default class ProjectDetail extends Component {
   state = {
     currentItem: 'Idea',
     isDialogVisible: false,
-    dataList: []
-  }
+    dataList: [],
+    user: {
+      uid: ''
+    }
+  };
 
   componentDidMount(){
-    this.mounted = true
-    this.project = this.props.navigation.getParam('project')
-    this.currentUser = Firebase.shared().currentUser
-    this.getData()
+    this.mounted = true;
+    this.project = this.props.navigation.getParam('project');
+    this.setState({
+      user: this.props.navigation.getParam('user')
+    });
+    this.currentUser = Firebase.shared().currentUser;
+    this.getData();
     YellowBox.ignoreWarnings(['Warning: Failed prop type']);
   }
 
@@ -48,13 +54,6 @@ export default class ProjectDetail extends Component {
     }).then(() => {
       this.cancelButtonTapped()
     })
-
-
-    // firebase.database().ref('/users/' + this.currentUser.uid + '/projects/' + this.project.key + '/data').push({
-    //   text: this.state.data,
-    //   type: this.state.currentItem
-    // })
-    // this.cancelButtonTapped()
   }
 
   showDialog = (show) => {
@@ -82,21 +81,7 @@ export default class ProjectDetail extends Component {
           dataList: [...prevState.dataList, data]
         }))
       }
-    })
-
-    // firebase.database().ref('/users/' + this.currentUser.uid + '/projects/' + this.project.key + '/data').on('value', snapshot => {
-    //   var dataList = [];
-    //   if (snapshot.val() !== null) {
-    //     for (var key in snapshot.val()) {
-    //       var data = snapshot.val()[key];
-    //       data['key'] = key;
-    //       dataList.push(data);
-    //     }
-    //   }
-    //   this.setState({
-    //     dataList: dataList.reverse()
-    //   });
-    // })
+    });
   }
 
   render() {
@@ -139,11 +124,17 @@ export default class ProjectDetail extends Component {
 
     return (
         <View style={styles.container}>
-          <FlatList
-              data={this.state.dataList}
-              renderItem={({item}) => <ProjectDetailItem data={item} />}
-              keyExtractor={(item) => item.key}
-          />
+          {
+            this.state.dataList.length > 0
+            ?
+              <FlatList
+                data={this.state.dataList}
+                renderItem={({item}) => <ProjectDetailItem data={item} />}
+                keyExtractor={(item) => item.key}
+              />
+              :
+              <View style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}><Text>No Data</Text></View>
+          }
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add {this.state.currentItem === 'thought' ? "a" : "an"} {this.state.currentItem}</Dialog.Title>
             <Dialog.Input value={this.state.data} onChangeText={(text) => this.setState({data: text.toLowerCase()})}></Dialog.Input>
@@ -157,13 +148,17 @@ export default class ProjectDetail extends Component {
                   : null
             }
           </Dialog.Container>
-          <FloatingAction
-              actions={actions}
-              onPressItem={name => {
-                this.setState({currentItem: `${name}`, isDialogVisible: true});
-              }}
-              color="#00BCD4"
-          />
+          {
+            this.state.user.uid == Firebase.shared().currentUser.uid
+            ? <FloatingAction
+                actions={actions}
+                onPressItem={name => {
+                  this.setState({currentItem: `${name}`, isDialogVisible: true});
+                }}
+                color="#00BCD4"
+              />
+              : null
+          }
         </View>
     )
   }

@@ -136,21 +136,26 @@ export default class CollabBoardScreen extends Component {
                 })
               }
             </View>
-            <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold', color: 'white'}}>Past Week</Text>
-            <View style={{
-              flexWrap: 'wrap',
-              flex: 1,
-              flexDirection: 'row',
-              padding: 2,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              {
-                this.state.pasWeekCollabs.map((item, index) => {
-                  return <CollabItem index={index} item={item} key={item.key} navigation={this.props.navigation} />
-                })
-              }
-            </View>
+            {
+              this.state.pasWeekCollabs.length > 0
+              ? <View>
+                  <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold', color: 'white'}}>Past Week</Text>
+                  <View style={{
+                    flexWrap: 'wrap',
+                    flex: 1,
+                    flexDirection: 'row',
+                    padding: 2,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {
+                      this.state.pasWeekCollabs.map((item, index) => {
+                        return <CollabItem index={index} item={item} key={item.key} navigation={this.props.navigation} />
+                      })
+                    }
+                  </View>
+                </View> : null
+            }
           </ScrollView>
           <Dialog.Container visible={this.state.isDialogVisible}>
             <Dialog.Title>Add a new topic</Dialog.Title>

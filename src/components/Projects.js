@@ -32,7 +32,7 @@ export default class Projects extends Component {
   }
 
   addButtonTapped() {
-    const urlError = validate('projectURL', this.state.projectURL)
+    const urlError = validate('projectURL', this.state.projectURL);
 
     this.setState({
       urlError: urlError
@@ -102,7 +102,7 @@ export default class Projects extends Component {
             this.state.projectList.length > 0
             ?  <FlatList
                 data={this.state.projectList}
-                renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} />}
+                renderItem={({item}) => <ProjectItem data={item} navigation={this.props.navigation} user={this.state.user} />}
                 keyExtractor={(item) => item.key}
             />
           : <Text style={{textAlign: 'center', margin: 20}}>No projects added.</Text>

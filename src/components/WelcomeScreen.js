@@ -1,11 +1,7 @@
 import React, {Component} from 'react';
 import {AsyncStorage, StyleSheet, View} from 'react-native';
 import {Button, Text} from 'react-native-elements';
-import SignInScreen from './SignInScreen'
-import CalendarScreen from "./CalendarScreen";
-import CalendarDetail from "./CalendarDetail";
-import CalendarDetailReadOnly from "./CalendarDetailReadOnly";
-import Step1 from "./Step1";
+import SignInScreen from './SignInScreen';
 
 export default class WelcomeScreen extends Component {
 
@@ -32,20 +28,20 @@ export default class WelcomeScreen extends Component {
     }
 
     render() {
-        // if (this.state.firstLaunch == true || this.state.firstLaunch == null) {
-        //     return (<View style={styles.container}>
-        //         <Text h3 style={styles.welcomeText}>Welcome</Text>
-        //         <Button
-        //             title='Sign In'
-        //             buttonStyle={styles.signInButton}
-        //             containerStyle={styles.signInButtonContainer}
-        //             titleStyle={styles.signInButtonTitle}
-        //             onPress={() => this.props.navigation.navigate('SignIn')}
-        //         />
-        //     </View>)
-        // } else {
-            return <Step1 navigation={this.props.navigation} />
-        // }
+        if (this.state.firstLaunch == true || this.state.firstLaunch == null) {
+            return (<View style={styles.container}>
+                <Text h3 style={styles.welcomeText}>Welcome</Text>
+                <Button
+                    title='Sign In'
+                    buttonStyle={styles.signInButton}
+                    containerStyle={styles.signInButtonContainer}
+                    titleStyle={styles.signInButtonTitle}
+                    onPress={() => this.props.navigation.navigate('SignIn')}
+                />
+            </View>)
+        } else {
+            return <SignInScreen navigation={this.props.navigation} />
+        }
     }
 
 }
