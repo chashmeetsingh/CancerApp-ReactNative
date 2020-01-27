@@ -1,23 +1,29 @@
 import React, {Component} from 'react'
 import {Button} from 'react-native-elements'
 import {StyleSheet, Text, View} from 'react-native'
-import * as firebase from 'firebase';
+import Firebase from "./FirebaseSVC";
 
 export default class CollaborateRequest extends Component {
 
   componentDidMount(){
     this.user = this.props.user;
+    this.messageKey = this.props.messageKey;
   }
 
   acceptRequestButtonTapped() {
-    firebase.database().ref('/messages/' + this.user.messageKey).update({
+    console.log(this.key)
+    Firebase.shared().getMessage(this.messageKey).update({
       status: 'accepted'
+    }).then(() => {
+      this.props.updateStatus('accepted');
     })
   }
 
   rejectRequestButtonTapped() {
-    firebase.database().ref('/messages/' + this.user.messageKey).update({
+    Firebase.shared().getMessage(this.messageKey).update({
       status: 'rejected'
+    }).then(() => {
+      this.props.updateStatus('rejected');
     })
   }
 

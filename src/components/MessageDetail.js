@@ -27,9 +27,7 @@ export default class MessageDetail extends Component {
     };
 
     componentDidMount() {
-        this.mounted = true
-        // this.messageKey = this.props.navigation.getParam('user').messageKey;
-        // this.currentUser = FirebaseSVC.shared().currentUser;
+        this.mounted = true;
 
         this.setState({
           data: this.props.navigation.getParam('user'),
@@ -119,6 +117,12 @@ export default class MessageDetail extends Component {
         );
     };
 
+    updateStatus = (status) => {
+      this.setState({
+        status: status
+      })
+    };
+
     render() {
       if (this.state.conversation.createdBy === Firebase.shared().currentUser.uid) {
         if (this.state.status === 'waiting') {
@@ -145,7 +149,11 @@ export default class MessageDetail extends Component {
         }
       } else {
         if (this.state.status === 'waiting') {
-          return <CollaborateRequest user={this.props.navigation.getParam('user')} />
+          return <CollaborateRequest
+            user={this.props.navigation.getParam('user')}
+            messageKey={this.props.navigation.getParam('conversation').key}
+            updateStatus={this.updateStatus}
+          />
         } else if (this.state.status === 'accepted') {
           return (
               <GiftedChat
